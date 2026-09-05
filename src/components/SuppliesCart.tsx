@@ -34,7 +34,6 @@ export default function SuppliesCart({ readOnly = false }: Props) {
   const previewRequestKeyRef = useRef<Record<string, string>>({});
   const [formData, setFormData] = useState<SupplyFormData>(INITIAL_SUPPLY_FORM);
   const apiBase = import.meta.env.VITE_API_BASE || '';
-  const apiFallback = 'http://localhost:3001';
 
   useEffect(() => {
     fetchSupplies();
@@ -287,14 +286,8 @@ export default function SuppliesCart({ readOnly = false }: Props) {
       try {
         let payload: { imageUrl?: string | null } | null = null;
 
-        for (const base of [apiBase, apiFallback]) {
-          const res = await fetch(
-            `${base}/api/link-preview?url=${encodeURIComponent(href)}`
-          );
-          if (!res.ok) continue;
-          payload = (await res.json()) as { imageUrl?: string | null };
-          break;
-        }
+        const res = await fetch(`${apiBase}/api/link-preview?url=${encodeURIComponent(href)}`);
+        if (res.ok) payload = await res.json() as { imageUrl?: string | null };
 
         if (!payload) throw new Error('Preview request failed');
         if (cancelled) return;
@@ -326,7 +319,7 @@ export default function SuppliesCart({ readOnly = false }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [apiBase, apiFallback, supplies]);
+  }, [apiBase, supplies]);
 
   if (loading) {
     return <div className="text-center py-8">Loading supplies...</div>;
