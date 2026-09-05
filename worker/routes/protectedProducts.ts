@@ -65,6 +65,14 @@ async function readProduct(request: Request, partial: boolean) {
 export async function handleProtectedProductsRequest(request: Request, db: D1Database | undefined): Promise<Response | null> {
   if (!db) return null;
   const pathname = new URL(request.url).pathname;
+  if (pathname === '/api/storefront/products' && request.method === 'GET') {
+    const auth = await resolveAuthContext(db, request);
+    if (!auth) return json({ error: 'Unauthorized' }, { status: 401 });
+    return json(await createD1Repository(db).all<Record<string, unknown>>(
+      'SELECT id, name, description, image_data, price, quantity_in_stock FROM Product WHERE account_id = ? ORDER BY name ASC',
+      [auth.accountId],
+    ));
+  }
   const match = pathname.match(/^\/api\/products(?:\/([^/]+))?$/);
   if (!match || request.method === 'GET') return null;
   const auth = await resolveAuthContext(db, request);
