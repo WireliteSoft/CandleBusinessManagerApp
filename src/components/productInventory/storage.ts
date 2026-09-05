@@ -13,6 +13,9 @@ export function loadFavoriteProductIds(): string[] {
 }
 
 export function readFileAsDataUrl(file: File): Promise<string> {
+  if (file.size > 1_500_000) {
+    return Promise.reject(new Error('Images must be 1.5 MB or smaller on the free Cloudflare plan.'));
+  }
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result || ''));

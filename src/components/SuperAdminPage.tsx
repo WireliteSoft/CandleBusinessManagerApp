@@ -322,7 +322,7 @@ export default function SuperAdminPage() {
     try {
       const selected = Array.from(files).slice(0, 12);
       const images = await Promise.all(
-        selected.map(
+        selected.filter((file) => file.size <= 1_500_000).map(
           (file) =>
             new Promise<string>((resolve, reject) => {
               const reader = new FileReader();
@@ -332,6 +332,7 @@ export default function SuperAdminPage() {
             })
         )
       );
+      if (images.length !== selected.length) setError('Oversized evidence images were skipped. Maximum size is 1.5 MB.');
       setReasonModal((prev) => ({ ...prev, evidenceImagesData: images.filter(Boolean) }));
     } catch {
       setError('Failed to read one or more image files.');

@@ -145,6 +145,10 @@ export default function EmployeeCommission({ readOnly = false }: Props) {
       setFormData((prev) => ({ ...prev, picture_data: '' }));
       return;
     }
+    if (file.size > 1_500_000) {
+      alert('Images must be 1.5 MB or smaller on the free Cloudflare plan.');
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = () => {
