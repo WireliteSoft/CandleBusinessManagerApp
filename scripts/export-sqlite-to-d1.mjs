@@ -8,7 +8,8 @@ const accountsPath = join(root, 'storage', 'accounts');
 const migrationsPath = join(root, 'migrations');
 const outputPath = join(root, 'exports', 'd1-import.sql');
 const chunksPath = join(root, 'exports', 'd1-import-chunks');
-const maxChunkBytes = 500_000;
+const maxChunkBytes = 80_000;
+const maxInlineValueBytes = 500;
 
 function quoteIdentifier(value) {
   return `"${value.replaceAll('"', '""')}"`;
@@ -18,8 +19,9 @@ function sqlValue(value) {
   if (value === null || value === undefined) return 'NULL';
   if (typeof value === 'number') return Number.isFinite(value) ? String(value) : 'NULL';
   if (typeof value === 'bigint') return value.toString();
-  if (value instanceof Uint8Array) return `X'${Buffer.from(value).toString('hex')}'`;
-  return `'${String(value).replaceAll("'", "''")}'`;
+  if (value instanceof Uint8Array) return value.byteLength <= maxInlineValueBytes ? `X'${Buffer.from(value).toString('hex')}'` : "X''";
+  const text = String(value);
+  return Buffer.byteLength(text, 'utf8') <= maxInlineValueBytes ? `'${text.replaceAll("'", "''")}'` : "''";
 }
 
 function tableNames(db) {
@@ -29,6 +31,18 @@ function tableNames(db) {
 
 function columns(db, table) {
   return db.prepare(`PRAGMA table_info(${quoteIdentifier(table)})`).all().map((row) => row.name);
+}
+
+function dependencyOrderedTables(db) {
+  const pending = new Set(tableNames(db));
+  const ordered = [];
+  while (pending.size) {
+    const ready = [...pending].filter((table) => db.prepare(`PRAGMA foreign_key_list(${quoteIdentifier(table)})`).all()
+      .every((foreignKey) => foreignKey.table === table || !pending.has(foreignKey.table)));
+    const next = ready.length ? ready.sort() : [...pending].sort();
+    for (const table of next) { pending.delete(table); ordered.push(table); }
+  }
+  return ordered;
 }
 
 function createTargetSchema() {
@@ -118,17 +132,28 @@ const exportLines = [
   'PRAGMA defer_foreign_keys = ON;',
   'BEGIN TRANSACTION;',
 ];
-for (const table of tableNames(target)) {
+for (const table of dependencyOrderedTables(target)) {
   const tableColumns = columns(target, table);
   const rows = target.prepare(`SELECT * FROM ${quoteIdentifier(table)}`).all();
   for (const row of rows) {
-    exportLines.push(`INSERT INTO ${quoteIdentifier(table)} (${tableColumns.map(quoteIdentifier).join(', ')}) VALUES (${tableColumns.map((column) => sqlValue(row[column])).join(', ')});`);
+    exportLines.push(`INSERT OR IGNORE INTO ${quoteIdentifier(table)} (${tableColumns.map(quoteIdentifier).join(', ')}) VALUES (${tableColumns.map((column) => sqlValue(row[column])).join(', ')});`);
   }
 }
 exportLines.push('COMMIT;');
 exportLines.push('PRAGMA defer_foreign_keys = OFF;');
 const cleanSql = `${exportLines.join('\n')}\n`;
 target.close();
+
+const strictTarget = createTargetSchema();
+for (const statement of exportLines.slice(4, -2)) {
+  try {
+    strictTarget.exec(statement);
+  } catch (error) {
+    strictTarget.close();
+    throw new Error(`D1 import dependency failure: ${statement.slice(0, 300)}\n${error.message}`);
+  }
+}
+strictTarget.close();
 
 mkdirSync(join(root, 'exports'), { recursive: true });
 rmSync(outputPath, { force: true });
@@ -154,12 +179,7 @@ if (statements.length) chunks.push(statements);
 for (const [index, chunk] of chunks.entries()) {
   const filename = `${String(index + 1).padStart(4, '0')}.sql`;
   writeFileSync(join(chunksPath, filename), [
-    '-- Generated D1 import chunk. Run chunks in filename order.',
-    'PRAGMA defer_foreign_keys = ON;',
-    'BEGIN TRANSACTION;',
     ...chunk,
-    'COMMIT;',
-    'PRAGMA defer_foreign_keys = OFF;',
     '',
   ].join('\n'), 'utf8');
 }
