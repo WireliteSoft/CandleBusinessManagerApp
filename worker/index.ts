@@ -51,17 +51,14 @@ import { handlePublicAppealsRequest } from './routes/publicAppeals';
 import { handleBillingBasicRequest } from './routes/billingBasic';
 import { handleBillingPaidRequest } from './routes/billingPaid';
 import { handleSuperAdminRequest } from './routes/superAdmin';
-import { deliverStoreEmail, type EmailOutboxMessage, type EmailOutboxQueue } from './lib/emailOutbox';
 
 export interface Env {
   ASSETS: Fetcher;
   APP_ORIGIN?: string;
   DB?: D1Database;
-  STORE_MEDIA?: R2Bucket;
   SQUARE_APPLICATION_ID?: string; SQUARE_LOCATION_ID?: string; SQUARE_ACCESS_TOKEN?: string; SQUARE_ENVIRONMENT?: string;
   PAYPAL_CLIENT_ID?: string; PAYPAL_CLIENT_SECRET?: string; PAYPAL_ENVIRONMENT?: string;
   SQUARE_WEBHOOK_SIGNATURE_KEY?: string; SQUARE_WEBHOOK_URL?: string; PAYPAL_WEBHOOK_ID?: string;
-  EMAIL_OUTBOX?: EmailOutboxQueue; EMAIL_DELIVERY_URL?: string; EMAIL_DELIVERY_TOKEN?: string;
   SUPERADMIN_EMAIL?: string; SUPERADMIN_PASSWORD?: string;
 }
 
@@ -84,7 +81,6 @@ export default {
         migration: env.DB ? 'identity-schema-ready' : 'foundation-only',
         bindings: {
           d1: Boolean(env.DB),
-          r2: Boolean(env.STORE_MEDIA),
         },
       });
     }
@@ -111,7 +107,7 @@ export default {
     const billingPaidResponse = await handleBillingPaidRequest(request, env.DB, { squareAccessToken: env.SQUARE_ACCESS_TOKEN, squareLocationId: env.SQUARE_LOCATION_ID, squareEnvironment: env.SQUARE_ENVIRONMENT, paypalClientId: env.PAYPAL_CLIENT_ID, paypalClientSecret: env.PAYPAL_CLIENT_SECRET, paypalEnvironment: env.PAYPAL_ENVIRONMENT });
     if (billingPaidResponse) return billingPaidResponse;
 
-    const storefrontMediaResponse = await handleStorefrontMediaRequest(request, env.DB, env.STORE_MEDIA);
+    const storefrontMediaResponse = await handleStorefrontMediaRequest(request, env.DB);
     if (storefrontMediaResponse) return storefrontMediaResponse;
 
     const publicStoreResponse = await handlePublicStoreRequest(request, env.DB);
@@ -128,9 +124,9 @@ export default {
     if (publicGiftRegistryResponse) return publicGiftRegistryResponse;
     const publicCheckoutConfigResponse = await handlePublicCheckoutConfigRequest(request, env.DB, { squareApplicationId: env.SQUARE_APPLICATION_ID, squareLocationId: env.SQUARE_LOCATION_ID, squareAccessToken: env.SQUARE_ACCESS_TOKEN, paypalClientId: env.PAYPAL_CLIENT_ID, paypalClientSecret: env.PAYPAL_CLIENT_SECRET });
     if (publicCheckoutConfigResponse) return publicCheckoutConfigResponse;
-    const publicCheckoutPaymentResponse = await handlePublicCheckoutPaymentRequest(request, env.DB, { squareAccessToken: env.SQUARE_ACCESS_TOKEN, squareLocationId: env.SQUARE_LOCATION_ID, squareEnvironment: env.SQUARE_ENVIRONMENT, paypalClientId: env.PAYPAL_CLIENT_ID, paypalClientSecret: env.PAYPAL_CLIENT_SECRET, paypalEnvironment: env.PAYPAL_ENVIRONMENT, emailOutbox: env.EMAIL_OUTBOX });
+    const publicCheckoutPaymentResponse = await handlePublicCheckoutPaymentRequest(request, env.DB, { squareAccessToken: env.SQUARE_ACCESS_TOKEN, squareLocationId: env.SQUARE_LOCATION_ID, squareEnvironment: env.SQUARE_ENVIRONMENT, paypalClientId: env.PAYPAL_CLIENT_ID, paypalClientSecret: env.PAYPAL_CLIENT_SECRET, paypalEnvironment: env.PAYPAL_ENVIRONMENT });
     if (publicCheckoutPaymentResponse) return publicCheckoutPaymentResponse;
-    const publicCheckoutResponse = await handlePublicCheckoutRequest(request, env.DB, env.EMAIL_OUTBOX);
+    const publicCheckoutResponse = await handlePublicCheckoutRequest(request, env.DB);
     if (publicCheckoutResponse) return publicCheckoutResponse;
 
     const publicPickupResponse = await handlePublicPickupRequest(request, env.DB);
@@ -229,7 +225,7 @@ export default {
     if (protectedStorefrontDiscountsResponse) return protectedStorefrontDiscountsResponse;
     const protectedStorefrontOrdersResponse = await handleProtectedStorefrontOrdersRequest(request, env.DB);
     if (protectedStorefrontOrdersResponse) return protectedStorefrontOrdersResponse;
-    const protectedStorefrontRefundResponse = await handleProtectedStorefrontRefundRequest(request, env.DB, { squareAccessToken: env.SQUARE_ACCESS_TOKEN, squareEnvironment: env.SQUARE_ENVIRONMENT, paypalClientId: env.PAYPAL_CLIENT_ID, paypalClientSecret: env.PAYPAL_CLIENT_SECRET, paypalEnvironment: env.PAYPAL_ENVIRONMENT, emailOutbox: env.EMAIL_OUTBOX });
+    const protectedStorefrontRefundResponse = await handleProtectedStorefrontRefundRequest(request, env.DB, { squareAccessToken: env.SQUARE_ACCESS_TOKEN, squareEnvironment: env.SQUARE_ENVIRONMENT, paypalClientId: env.PAYPAL_CLIENT_ID, paypalClientSecret: env.PAYPAL_CLIENT_SECRET, paypalEnvironment: env.PAYPAL_ENVIRONMENT });
     if (protectedStorefrontRefundResponse) return protectedStorefrontRefundResponse;
     const protectedStorefrontConfigResponse = await handleProtectedStorefrontConfigRequest(request, env.DB);
     if (protectedStorefrontConfigResponse) return protectedStorefrontConfigResponse;
@@ -244,16 +240,5 @@ export default {
     }
 
     return env.ASSETS.fetch(request);
-  },
-
-  async queue(batch: { messages: Array<{ body: EmailOutboxMessage; ack(): void; retry(): void }> }, env: Env): Promise<void> {
-    for (const message of batch.messages) {
-      try {
-        await deliverStoreEmail(env.DB, message.body, { deliveryUrl: env.EMAIL_DELIVERY_URL, deliveryToken: env.EMAIL_DELIVERY_TOKEN });
-        message.ack();
-      } catch {
-        message.retry();
-      }
-    }
   },
 };
