@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "candle-business-manager",
+  "main": "./worker/index.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+
+  // Add these bindings after creating the staging resources described in
+  // docs/CLOUDFLARE_SETUP.md. Do not commit real IDs or secrets to this file.
+  // "d1_databases": [
+  //   {
+  //     "binding": "DB",
+  //     "database_name": "candles-business-staging",
+  //     "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+  //     "migrations_dir": "./migrations"
+  //   }
+  // ],
+  // "r2_buckets": [
+  //   {
+  //     "binding": "STORE_MEDIA",
+  //     "bucket_name": "candles-business-media-staging"
+  //   }
+  // ],
+  // "queues": {
+  //   "producers": [{ "binding": "EMAIL_OUTBOX", "queue": "candles-email-outbox-staging" }],
+  //   "consumers": [{ "queue": "candles-email-outbox-staging", "max_batch_size": 10, "max_retries": 5 }]
+  // }
+}

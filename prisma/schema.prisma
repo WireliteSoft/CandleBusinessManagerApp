@@ -1,0 +1,644 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                String   @id @default(cuid())
+  name              String
+  description       String   @default("")
+  image_data        String   @default("")
+  product_type      String   @default("physical")
+  scent_family      String   @default("")
+  fragrance_notes   String   @default("")
+  sweetness         String   @default("")
+  scent_strength    String   @default("")
+  warmth            String   @default("")
+  freshness         String   @default("")
+  season            String   @default("")
+  mood              String   @default("")
+  room              String   @default("")
+  burn_time         String   @default("")
+  wax_type          String   @default("")
+  wick_type         String   @default("")
+  batch_number      String   @default("")
+  inspiration       String   @default("")
+  making_process    String   @default("")
+  limited_drop      Boolean  @default(false)
+  drop_number       String   @default("")
+  purchase_limit    Int      @default(0)
+  upcoming_release  Boolean  @default(false)
+  release_date      String   @default("")
+  preorders_enabled Boolean  @default(false)
+  member_exclusive  Boolean  @default(false)
+  member_early_access_days Int @default(0)
+  subscriber_exclusive Boolean @default(false)
+  subscriber_early_access_days Int @default(0)
+  price             Float
+  quantity_in_stock Int      @default(0)
+  cost_per_unit     Float
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  sales             Sale[]
+  store_order_items StoreOrderItem[]
+}
+
+model Supply {
+  id                String             @id @default(cuid())
+  name              String
+  description       String             @default("")
+  category          String             @default("containers")
+  cost_per_unit     Float
+  quantity_in_stock Int                @default(0)
+  unit_type         String             @default("oz")
+  supplier          String             @default("")
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @updatedAt
+  cart_items        CartItem[]
+  recipe_ingredients RecipeIngredient[]
+}
+
+model WaxInventory {
+  id          String   @id @default(cuid())
+  wax_type_id String   @unique
+  wax_name    String
+  pounds      Float    @default(0)
+  total_price Float    @default(0)
+  selected    Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model ScentProfile {
+  id                 String   @id @default(cuid())
+  supplier           String   @default("")
+  supplier_sku       String   @default("")
+  name               String
+  scent_family       String   @default("")
+  top_notes          String   @default("")
+  middle_notes       String   @default("")
+  base_notes         String   @default("")
+  flashpoint_f       Float?
+  vanillin_content   String   @default("")
+  phthalate_free     Boolean  @default(false)
+  prop65_warning     Boolean  @default(false)
+  soy_performance    String   @default("")
+  recommended_load   String   @default("")
+  usage_notes        String   @default("")
+  source_url         String   @default("")
+  source_attribution String   @default("")
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+}
+
+model FragranceOilCatalog {
+  id            String   @id
+  name          String
+  image_url     String   @default("")
+  source_url    String   @default("")
+  variants_json String   @default("[]")
+  discontinued  Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@index([name])
+}
+
+model Employee {
+  id              String   @id @default(cuid())
+  name            String
+  email           String
+  address         String   @default("")
+  phone           String   @default("")
+  picture_data    String   @default("")
+  commission_rate Float    @default(0.1)
+  active          Boolean  @default(true)
+  created_at      DateTime @default(now())
+  sales           Sale[]
+}
+
+model Sale {
+  id                String    @id @default(cuid())
+  product_id        String
+  employee_id       String?
+  quantity          Int       @default(1)
+  sale_price        Float
+  total_amount      Float
+  commission_amount Float     @default(0)
+  sale_date         DateTime  @default(now())
+  created_at        DateTime  @default(now())
+  product           Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  employee          Employee? @relation(fields: [employee_id], references: [id], onDelete: SetNull)
+}
+
+model CartItem {
+  id         String   @id @default(cuid())
+  supply_id  String
+  quantity   Int      @default(1)
+  notes      String   @default("")
+  created_at DateTime @default(now())
+  supply     Supply   @relation(fields: [supply_id], references: [id], onDelete: Cascade)
+}
+
+model CandleRecipe {
+  id               String             @id @default(cuid())
+  name             String
+  description      String             @default("")
+  yield_quantity   Int                @default(1)
+  batch_size       Float
+  difficulty_level String             @default("Medium")
+  notes            String             @default("")
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt
+  recipe_ingredients RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  id         String       @id @default(cuid())
+  recipe_id  String
+  supply_id  String
+  quantity   Float
+  percentage Float        @default(0)
+  notes      String       @default("")
+  created_at DateTime     @default(now())
+  recipe     CandleRecipe @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+  supply     Supply       @relation(fields: [supply_id], references: [id], onDelete: Cascade)
+}
+
+model BatchLog {
+  id             String   @id
+  batch_date     String
+  batch_name     String
+  candles_amount Int      @default(0)
+  wax_type       String   @default("")
+  container_type String   @default("")
+  container_size String   @default("")
+  wax_weight_oz  Float    @default(0)
+  fragrance_load Float    @default(8)
+  fragrance_oil  String   @default("")
+  wick_type      String   @default("")
+  wick_size      String   @default("")
+  wick_count     Int      @default(1)
+  vessel         String   @default("")
+  pour_temp_f    Float    @default(0)
+  room_temp_f    Float    @default(0)
+  room_humidity  Float    @default(0)
+  pricing_wax_cost Float  @default(0)
+  pricing_wax_weight_lb Float @default(0)
+  pricing_fragrance_used_oz Float @default(0)
+  pricing_fragrance_cost_used Float @default(0)
+  pricing_fill_per_candle_oz Float @default(0)
+  pricing_jar_cost_each Float @default(0)
+  pricing_wick_cost_each Float @default(0)
+  pricing_label_cost_each Float @default(0)
+  pricing_other_cost_each Float @default(0)
+  pricing_labor_overhead_each Float @default(0)
+  pricing_material_cost_per_candle Float @default(0)
+  pricing_total_cost_per_candle Float @default(0)
+  pricing_wholesale_suggestion Float @default(0)
+  pricing_retail_suggestion Float @default(0)
+  pricing_premium_suggestion Float @default(0)
+  pricing_cogs_source String @default("total")
+  pricing_price_source String @default("retail")
+  notes          String   @default("")
+  outcome        String   @default("pending")
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
+
+model Mold {
+  id         String   @id
+  name       String
+  weight_oz  Float    @default(0)
+  image_data String   @default("")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Account {
+  id              String   @id
+  name            String
+  join_code       String   @default("")
+  plan_tier       String   @default("free")
+  is_banned       Boolean  @default(false)
+  ban_reason      String   @default("")
+  ban_evidence_note String @default("")
+  ban_evidence_image_data String @default("")
+  ban_evidence_images_data String @default("[]")
+  access_disabled Boolean  @default(false)
+  disable_reason  String   @default("")
+  store_slug      String   @default("")
+  store_title     String   @default("")
+  store_description String @default("")
+  store_logo_data String   @default("")
+  store_banner_data String @default("")
+  store_background_image_data String @default("")
+  store_custom_html String   @default("")
+  store_preset_state String @default("")
+  store_custom_full_mode Boolean @default(false)
+  store_show_details Boolean @default(true)
+  store_product_ids String @default("[]")
+  created_at      DateTime @default(now())
+}
+
+model BillingConfig {
+  id                  String   @id
+  standard_monthly_usd Float    @default(5.99)
+  standard_yearly_usd  Float    @default(57.50)
+  pro_monthly_usd      Float    @default(7.99)
+  pro_yearly_usd       Float    @default(76.70)
+  elite_monthly_usd    Float    @default(14.99)
+  elite_yearly_usd     Float    @default(143.90)
+  currency            String   @default("USD")
+  updated_at          DateTime @updatedAt
+  created_at          DateTime @default(now())
+}
+
+model BillingCheckoutSession {
+  id                  String   @id
+  account_id          String
+  account_user_id     String
+  from_tier           String   @default("free")
+  target_tier         String
+  billing_cycle       String   @default("monthly")
+  payment_method      String
+  billing_terms_version String @default("")
+  billing_terms_accepted_at DateTime?
+  billing_terms_acceptance_ip String @default("")
+  provider            String
+  provider_session_id String   @default("")
+  currency            String   @default("USD")
+  base_amount         Float    @default(0)
+  credit_applied      Float    @default(0)
+  amount_due          Float    @default(0)
+  payment_status      String   @default("unpaid")
+  status              String   @default("pending")
+  paid_at             DateTime?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  @@index([account_id, created_at], map: "BillingCheckoutSession_account_created_idx")
+  @@index([provider, provider_session_id], map: "BillingCheckoutSession_provider_session_idx")
+}
+
+model AccountBillingProfile {
+  account_id                String   @id
+  billing_name              String   @default("")
+  billing_email             String   @default("")
+  billing_phone             String   @default("")
+  company_name              String   @default("")
+  street_address_1          String   @default("")
+  street_address_2          String   @default("")
+  city                      String   @default("")
+  state_region              String   @default("")
+  postal_code               String   @default("")
+  country                   String   @default("")
+  preferred_payment_method  String   @default("card")
+  paypal_email              String   @default("")
+  payment_profile_note      String   @default("")
+  created_at                DateTime @default(now())
+  updated_at                DateTime @updatedAt
+}
+
+model StoreCustomer {
+  id        String   @id
+  name      String   @default("")
+  email     String   @unique
+  password_hash String
+  phone     String   @default("")
+  marketing_opt_in Boolean @default(false)
+  reminder_opt_in Boolean @default(false)
+  active    Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  addresses StoreCustomerAddress[]
+  sessions  StoreCustomerSession[]
+  orders    StoreOrder[]
+}
+
+model StoreCustomerSession {
+  id          String   @id
+  customer_id String
+  token       String   @unique
+  expires_at  DateTime
+  created_at  DateTime @default(now())
+  customer    StoreCustomer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+}
+
+model StoreCustomerAddress {
+  id                String   @id
+  customer_id       String
+  label             String   @default("")
+  recipient_name    String   @default("")
+  street_address_1  String   @default("")
+  street_address_2  String   @default("")
+  city              String   @default("")
+  state_region      String   @default("")
+  postal_code       String   @default("")
+  country           String   @default("")
+  phone             String   @default("")
+  is_default        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  customer          StoreCustomer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+
+  @@index([customer_id, created_at])
+}
+
+model StoreOrder {
+  id                          String   @id
+  order_number                String   @unique
+  customer_id                 String
+  customer_name               String   @default("")
+  customer_email              String   @default("")
+  customer_phone              String   @default("")
+  status                      String   @default("awaiting_payment")
+  payment_status              String   @default("unpaid")
+  fulfillment_status          String   @default("unfulfilled")
+  currency                    String   @default("USD")
+  subtotal_amount             Float    @default(0)
+  discount_amount             Float    @default(0)
+  shipping_amount             Float    @default(0)
+  tax_amount                  Float    @default(0)
+  total_amount                Float    @default(0)
+  customer_note               String   @default("")
+  staff_note                  String   @default("")
+  tracking_number             String   @default("")
+  shipping_recipient_name     String   @default("")
+  shipping_street_address_1   String   @default("")
+  shipping_street_address_2   String   @default("")
+  shipping_city               String   @default("")
+  shipping_state_region       String   @default("")
+  shipping_postal_code        String   @default("")
+  shipping_country            String   @default("")
+  reservation_expires_at      DateTime?
+  paid_at                     DateTime?
+  created_at                  DateTime @default(now())
+  updated_at                  DateTime @updatedAt
+  customer                    StoreCustomer @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+  items                       StoreOrderItem[]
+  payments                    StoreOrderPayment[]
+
+  @@index([customer_id, created_at])
+  @@index([status, reservation_expires_at])
+}
+
+model StoreOrderItem {
+  id                 String   @id
+  order_id           String
+  product_id         String
+  product_name       String   @default("")
+  product_image_data String   @default("")
+  unit_price         Float    @default(0)
+  quantity           Int      @default(1)
+  line_total         Float    @default(0)
+  customization_json String   @default("")
+  created_at         DateTime @default(now())
+  order              StoreOrder @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product            Product @relation(fields: [product_id], references: [id], onDelete: Restrict)
+
+  @@index([order_id])
+  @@index([product_id])
+}
+
+model StoreOrderPayment {
+  id                  String   @id
+  order_id            String
+  provider            String
+  provider_payment_id String   @default("")
+  status              String   @default("pending")
+  amount              Float    @default(0)
+  currency            String   @default("USD")
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  order               StoreOrder @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+  @@index([order_id, created_at])
+}
+
+model PaymentWebhookEvent {
+  id                String   @id
+  provider          String
+  provider_event_id String
+  event_type        String   @default("")
+  created_at        DateTime @default(now())
+
+  @@unique([provider, provider_event_id])
+}
+
+model StoreEmailEvent {
+  id            String   @id
+  event_type    String
+  recipient     String   @default("")
+  subject       String   @default("")
+  body          String   @default("")
+  status        String   @default("pending")
+  error_message String   @default("")
+  sent_at       DateTime?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}
+
+model StoreBackInStockAlert {
+  id          String   @id
+  product_id  String
+  email       String
+  status      String   @default("active")
+  notified_at DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@unique([product_id, email])
+  @@index([product_id, status])
+}
+
+model StoreWaitlistEntry {
+  id          String   @id
+  product_id  String
+  email       String
+  status      String   @default("active")
+  notified_at DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@unique([product_id, email])
+  @@index([product_id, status])
+}
+
+model StoreScentPoll {
+  id         String   @id
+  title      String
+  poll_type  String   @default("next_scent")
+  options_json String @default("[]")
+  active     Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model StoreScentPollVote {
+  id          String   @id
+  poll_id     String
+  visitor_key String
+  option_name String
+  created_at  DateTime @default(now())
+
+  @@unique([poll_id, visitor_key])
+  @@index([poll_id, option_name])
+}
+
+model StoreCustomScentRequest {
+  id            String   @id
+  name          String
+  email         String
+  desired_notes String   @default("")
+  scent_family  String   @default("")
+  occasion      String   @default("")
+  details       String   @default("")
+  status        String   @default("new")
+  admin_notes   String   @default("")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@index([status, created_at])
+}
+
+model AccountRole {
+  id         String   @id
+  account_id String
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([account_id, name], map: "AccountRole_account_name_idx")
+}
+
+model AccountRolePermission {
+  id          String   @id
+  account_id  String
+  role_name   String
+  feature_key String
+  enabled     Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@unique([account_id, role_name, feature_key], map: "AccountRolePermission_account_role_feature_idx")
+}
+
+model AccountUser {
+  id            String   @id
+  account_id    String
+  name          String   @default("")
+  email         String   @default("")
+  username      String
+  password_hash String
+  role          String   @default("member")
+  active        Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@unique([account_id, username], name: "AccountUser_account_username_idx")
+  @@unique([email], name: "AccountUser_email_idx")
+}
+
+model AuthSession {
+  id              String   @id
+  account_user_id String
+  token           String   @unique(map: "AuthSession_token_idx")
+  expires_at      String
+  created_at      DateTime @default(now())
+}
+
+model AccountJoinRequest {
+  id                  String   @id
+  account_id          String
+  name                String   @default("")
+  email               String   @default("")
+  username            String
+  password_hash       String
+  requested_role      String   @default("member")
+  status              String   @default("pending")
+  reviewed_by_user_id String?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  @@index([account_id, status], map: "AccountJoinRequest_account_status_idx")
+}
+
+model SuperAdminSession {
+  id         String   @id
+  token      String   @unique(map: "SuperAdminSession_token_idx")
+  expires_at String
+  created_at DateTime @default(now())
+}
+
+model AuthEvent {
+  id              String   @id
+  account_id      String?
+  account_user_id String?
+  email           String   @default("")
+  event_type      String   @default("")
+  ip_address      String   @default("")
+  created_at      DateTime @default(now())
+
+  @@index([account_user_id, created_at], map: "AuthEvent_account_user_created_idx")
+}
+
+model BanAppealTicket {
+  id                 String             @id
+  account_id         String?
+  account_identifier String             @default("")
+  email              String             @default("")
+  name               String             @default("")
+  reason             String             @default("")
+  details            String             @default("")
+  participant_key    String             @default("")
+  status             String             @default("open")
+  created_at         DateTime           @default(now())
+  updated_at         DateTime           @updatedAt
+  messages           BanAppealMessage[]
+  evidence           BanAppealEvidence[]
+  history            BanAppealHistory[]
+}
+
+model BanAppealMessage {
+  id          String          @id
+  ticket_id   String
+  sender_type String          @default("user")
+  sender_name String          @default("")
+  message     String          @default("")
+  created_at  DateTime        @default(now())
+  ticket      BanAppealTicket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+
+  @@index([ticket_id, created_at], map: "BanAppealMessage_ticket_created_idx")
+}
+
+model BanAppealEvidence {
+  id         String         @id
+  ticket_id  String
+  added_by   String         @default("admin")
+  note       String         @default("")
+  image_data String         @default("")
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+  ticket     BanAppealTicket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+
+  @@index([ticket_id, created_at], map: "BanAppealEvidence_ticket_created_idx")
+}
+
+model BanAppealHistory {
+  id            String         @id
+  ticket_id     String         @unique(map: "BanAppealHistory_ticket_id_idx")
+  account_id    String
+  ban_reason    String         @default("")
+  appeal_status String         @default("")
+  completed_at  DateTime       @default(now())
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  ticket        BanAppealTicket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+
+  @@index([account_id, completed_at], map: "BanAppealHistory_account_completed_idx")
+}

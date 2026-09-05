@@ -1,0 +1,526 @@
+CLOUD CONVERSION PLAN - CLOUDFLARE WORKERS + D1 + R2
+Generated: 2026-09-01
+Scope: Convert the application for Cloudflare Workers, D1, R2, and Queues. Deploy through
+Cloudflare's GitHub integration after dashboard resources, bindings, and secrets are configured.
+
+IMPLEMENTATION STATUS - 2026-09-01
+- [x] Added Wrangler 4.128.0 development dependency.
+- [x] Added non-deployed Worker foundation at worker/index.ts.
+- [x] Added wrangler.jsonc with Workers Static Assets and intentionally commented D1/R2 bindings.
+- [x] Added initial D1 migration audit table at migrations/0001_cloud_migration_audit.sql.
+- [x] Added .dev.vars.example, Cloudflare staging setup documentation, and cf:* package scripts.
+- [x] Verified typecheck, lint, Vite production build, and Wrangler deploy --dry-run.
+- [x] Added a parameterized D1 repository helper for the Worker route migration.
+- [x] Added the initial consolidated D1 schema for accounts, logins, roles, sessions, authentication audit, and billing.
+- [x] Added the consolidated D1 schema for core operations: products, supplies, wax, recipes, batches, molds, employees, sales, carts, and shared fragrance catalog data.
+- [x] Added the first account-scoped D1 repository pattern for product reads.
+- [x] Added an isolated Worker TypeScript check (`npm run cf:typecheck`).
+- [x] Added credential-free local D1 migration configuration for schema validation.
+- [x] Applied and verified migrations 0001-0003 in Wrangler's local D1 emulator.
+- [x] Added the tenant-scoped D1 storefront commerce schema: customers, pickup, memberships, subscriptions, orders, discounts, gift cards, customer credit, rewards, and notifications.
+- [x] Added initial tenant-safe D1 storefront commerce repository reads.
+- [x] Applied and verified migration 0004 in Wrangler's local D1 emulator.
+- [x] Added the account-scoped D1 storefront engagement and services schema: polls, waitlists, reviews, collections, registries, custom requests, events, workshops, refills, and contact messages.
+- [x] Added initial D1 repository reads for public polls and published product reviews.
+- [x] Added D1 schema for webhook idempotency, email outbox records, ban appeals, evidence, appeal history, and IP bans.
+- [x] Applied and verified migrations 0005-0006 in Wrangler's local D1 emulator.
+- [x] Completed the initial consolidated D1 application schema. The next stage is route-by-route Worker API conversion.
+- [x] Began Worker API conversion with read-only public storefront, product-review, and fragrance-oil endpoints backed by D1.
+- [x] Verified the Worker public storefront route against a seeded local D1 elite storefront. Fixed D1 parameter-limit handling for the 100 default gift-card products.
+- [x] Added Worker D1 launch-poll reads and vote upserts, including customer vote changes.
+- [x] Verified first-vote and changed-vote behavior against local D1 through the temporary Worker runtime.
+- [x] Added Worker D1 endpoints for back-in-stock alerts and upcoming-product waitlist signups.
+- [x] Verified both availability subscription endpoints against the local Worker and local D1.
+- [x] Added Worker D1 submission endpoints for custom-scent requests and storefront contact messages.
+- [x] Verified custom-scent and contact submissions plus contact duplicate-rate limiting against local D1.
+- [x] Added Worker D1 routes for workshop availability/bookings and refill program/request flows.
+- [x] Verified workshop capacity protection and refill program/request behavior through the local Worker and D1.
+- [x] Added Worker D1 gift-pack and collection request submission routes with exact candle-count validation.
+- [x] Verified gift-pack and collection request submissions against the local Worker and D1.
+- [x] Removed Private Label from storefront UI, owner tools, API surfaces, and future D1 schema. Existing local SQLite records are retained but inaccessible.
+- [x] Added Worker D1 bearer-session resolution, owner/role feature authorization, and protected catalog reads for products, supplies, and wax inventory.
+- [x] Verified protected Worker catalog access with a temporary D1 owner session and anonymous rejection.
+- [x] Added Worker D1 product create, update, and delete routes with account scope, owner/role authorization, and bounded field validation.
+- [x] Verified authenticated product create, update, and delete through the local Worker and D1.
+- [x] Added Worker D1 supplies CRUD, atomic supply stock usage, and wax-inventory upsert routes with account scope and feature authorization.
+- [x] Verified authenticated supply stock protection and wax upsert behavior through the local Worker and D1.
+- [x] Added Worker D1 scent-profile list, create, update, and delete routes with existing supplies-edit authorization and bounded profile-field validation.
+- [x] Verified authenticated scent-profile CRUD and anonymous rejection through the local Worker and D1.
+- [x] Added Worker D1 account-scoped supplies-cart list, add, remove, and clear routes with joined supply details.
+- [x] Verified Worker supplies-cart authorization, account boundaries, nested supply response shape, remove, and clear behavior through local D1.
+- [x] Added Worker D1 molds list, create, update, and delete routes with account scope and supplies-edit authorization.
+- [x] Verified Worker mold authorization, validation, and CRUD behavior through local D1.
+- [x] Added Worker D1 employee list, active-list, create, update, and delete routes with account scope and team-employee authorization.
+- [x] Normalized D1 employee active values back to booleans to preserve the existing frontend API contract.
+- [x] Verified Worker employee authorization, input validation, active filtering, CRUD, and boolean response compatibility through local D1.
+- [x] Added Worker D1 recipe and recipe-ingredient routes, including account-scoped joined recipe reads and cross-account reference protection.
+- [x] Verified Worker recipe authorization, recipe and ingredient CRUD, joined supply details, cross-account protection, and cascade-safe recipe deletion through local D1.
+- [x] Added Worker D1 batch-log list, detail, create, update, and delete routes with account scope, batch authorization, and allowlisted pricing-field validation.
+- [x] Verified Worker batch-log authorization, validation, defaults, detail reads, CRUD, and pricing updates through local D1.
+- [x] Added Worker D1 employee-sales routes with guarded product stock reservation, account-scoped employee assignment, commission recalculation, sale details, and deletion.
+- [x] Verified Worker sales authorization, insufficient-stock rejection, stock deduction, commission reassignment, joined detail rows, and deletion through local D1.
+- [x] Added Worker D1 Teams contact-inbox routes with account-scoped filtering, counts, read and workflow actions, deletion, and IP-ban upserts.
+- [x] Verified Worker contact-inbox authorization, filtering, counts, read and workflow updates, completion priority clearing, IP banning, and deletion through local D1.
+- [x] Added Worker D1 Account Settings billing-profile, purchase-history, and usage-summary routes using consolidated account-scoped data.
+- [x] Verified Worker Account Settings authorization, profile initialization and update, account-only purchase history, and usage-summary totals through local D1.
+- [x] Added Worker D1 `/api/auth/me` session bootstrap route with account tier, user identity, expiry, and legacy join-code initialization.
+- [x] Verified Worker `/api/auth/me` anonymous rejection and authenticated frontend identity response through local D1.
+- [x] Migrated Worker public account bootstrap, registration, login, logout, and join-request endpoints using the consolidated D1 identity tables and 30-day bearer sessions.
+- [x] Verified local Worker registration, login, authenticated identity, and logout invalidation. Temporary account data was removed.
+- [x] Migrated Worker protected account-user management, join-request review, and join-code rotation with account-scoped authorization and session revocation on user deletion.
+- [x] Verified local Worker owner user create/list/delete and join-code rotation. Temporary account data was removed.
+- [x] Migrated Worker role permission reads plus owner/admin custom role create, permission replacement, and deletion with built-in-role and assigned-role safeguards.
+- [x] Verified local Worker custom role create, permission update, and deletion. Temporary account data was removed.
+- [x] Migrated the public ban-appeal participant workflow: creation, open-ticket lookup, participant-key ticket/message access, and resolved-appeal auto-login.
+- [x] Verified local Worker appeal creation, lookup, and participant message submission. Temporary ticket data was removed.
+- [x] Migrated Worker billing plan discovery, free-tier selection, and account-scoped checkout-session status endpoints.
+- [ ] Migrate paid billing checkout session creation plus Square and PayPal billing capture flows, preserving tier-quote credit calculations and billing-terms audit fields.
+- [x] Added Worker D1 owner Launch Tools routes for poll management, vote totals, and custom-scent request quote workflow.
+- [x] Verified Worker Launch Tools authorization, poll option normalization, public vote totals, poll closing, and custom-scent quote updates through local D1.
+- [x] Added Worker D1 storefront feature-setting controls and event-favor owner request management with account-scoped authorization.
+- [x] Verified public event-favor submission, owner feature toggles, request list access, and quote/status updates through local D1.
+- [x] Added Worker D1 owner service-management routes for workshop slots and bookings, party requests, refill programs and fulfillment, and custom-order quotes.
+- [x] Verified the workshop, party-request, refill, and custom-order quote lifecycles through the local Worker and D1.
+- [x] Added Worker D1 local-pickup settings and slot management plus public checkout availability with cutoff and capacity filtering.
+- [x] Verified owner pickup configuration, slot closing, and public pickup availability through the local Worker and D1.
+- [x] Added Worker D1 subscription-plan management, public plan discovery, and account-scoped subscription fulfillment updates.
+- [x] Verified subscription plan creation, public visibility, and deactivation through the local Worker and D1.
+- [x] Added Worker D1 membership-program settings and owner member lifecycle controls with customer notification records.
+- [x] Verified account-scoped member enrollment and notification creation through the local Worker and D1.
+- [x] Added Worker D1 owner review and gallery moderation routes plus the public approved-gallery feed.
+- [x] Verified owner review/gallery approval and public approved-gallery visibility through the local Worker and D1.
+- [x] Added Worker D1 owner reward awards and an idempotent reward ledger helper; approved reviews now award the appropriate points.
+- [x] Verified local D1 owner reward lifecycle: direct goodwill awards and automatic verified-review approval points update the account-scoped reward ledger and balance.
+- [x] Added Worker customer registration, login, legacy `scrypt` password verification, bearer-session resolution, profile update/deletion, and address CRUD with account-scoped ownership.
+- [x] Added Worker customer reward-account reads, membership status, referral-code creation, and notification read acknowledgements with customer-session authentication.
+- [x] Verified the local D1 customer-account lifecycle: registration, profile update, default address, rewards/referral read, authenticated profile read, and subsequent login. Temporary test data was removed.
+- [x] Added Worker customer engagement routes for saved collections, product favorites, gift registries, customer gallery submissions, and product reviews with storefront publication and account-ownership checks.
+- [x] Verified the local D1 customer-engagement lifecycle: saved collection, favorite, registry, gallery submission, and review creation. Temporary test data was removed.
+- [x] Added Worker customer commerce reads for order history/detail and subscription list/update actions, including reservation expiry and account-scoped ownership checks.
+- [x] Verified the local D1 customer-commerce lifecycle: order summary/detail, payment and item reads, subscription visibility, and skip-next updates. Temporary fixtures were removed.
+- [x] Added Worker public gift-registry link resolution with elite-store and active-registry checks plus account-scoped product reads.
+- [x] Enabled Worker Node compatibility as the prerequisite for preserving legacy storefront-customer `scrypt` password hashes during customer-account migration.
+- [x] Added Worker D1 gift-card and account-credit administration: owner lists, issuance, additive-only adjustments, audit rows, and customer notifications.
+- [x] Verified gift-card issuance, staff top-up, account-credit grant, and account-scoped audit/list results through the local Worker and D1.
+- [x] Added Worker D1 discount-code administration with account-scoped code/redemption reads, creation, scheduling, stacking rules, and limit updates.
+- [x] Verified the local D1 checkout discount-code lifecycle: eligible code validation, redemption creation, usage-count increment, and gift-card stacking complete with zero-total finalization.
+- [x] Added Worker D1 owner order operations: expired reservation cancellation, queue/detail reads, label review, protected fulfillment updates, and cancelled-order deletion.
+- [x] Verified local D1 owner order operations: queue/detail reads, custom-label review, paid fulfillment updates, cancelled-order deletion, and payment-state safeguards.
+- [x] Migrated protected Square/PayPal full refunds plus Square and PayPal webhook verification/reconciliation to Worker routes. Refunds create provider-linked negative payment records, completed refunds close orders, and webhook events are idempotent in D1.
+- [ ] Run Square and PayPal sandbox refund and raw-webhook signature tests before enabling production provider capture.
+- [x] Began the checkout migration with Worker-owned reservation, mix-and-match discount, money-rounding, and order-number helpers. Order creation and payment finalization will consume these shared rules.
+- [x] Replaced the Worker checkout stub with the full D1 order-creation flow: published-product validation, reservation expiry, stock protection, shipping/pickup selection, mix discounts, membership discounts, gift cards, credits, discount-code validation, and zero-balance finalization now run through `worker/routes/publicCheckout.ts`.
+- [x] Migrated Square payment capture plus PayPal create/capture endpoints to Worker fetch calls, connected to the D1 checkout finalization flow with customer ownership checks.
+- [x] Verified a local Worker zero-total checkout lifecycle with stock decrement, gift-card redemption, discount-code usage/redemption records, payment records, and outbox events. Temporary fixture data was removed.
+- [x] Verified concurrent local Worker checkout requests for one inventory unit: one order paid, one request received a stock conflict, stock never became negative, and no duplicate payment record was created. Temporary fixture data was removed.
+- [ ] Run Square and PayPal sandbox payment and refund/webhook signature tests before enabling production provider capture.
+- [x] Added a provider-neutral D1 email outbox and Cloudflare Queue consumer. Checkout, successful payment, and completed refund events persist before enqueueing; the consumer posts event payloads to the configured `EMAIL_DELIVERY_URL` and records successful delivery.
+- [ ] Select and configure the transactional-email adapter, `EMAIL_OUTBOX` Queue binding, `EMAIL_DELIVERY_URL`, and `EMAIL_DELIVERY_TOKEN`; then test delivery and retry/dead-letter behavior in staging.
+- [x] Added Worker D1 storefront configuration reads and updates for identity, content, display settings, preset state, and featured products.
+- [x] Replaced legacy storefront image/font filesystem uploads with account-scoped R2 object upload and Worker media URL routes.
+- [x] Verified local R2 image upload and public media retrieval through the Worker; temporary media was removed.
+- [ ] Apply migrations to a staging D1 database after `wrangler login` and binding configuration.
+- [ ] Create staging D1, R2, Queue, and custom-domain resources after Wrangler authentication.
+- [ ] Convert the consolidated D1 application schema and route repository layer.
+- [ ] No production deployment, database import, or active API route switch has occurred.
+
+1. CURRENT PROJECT ARCHITECTURE
+
+Frontend
+- Vite 5 + React 18 + TypeScript + Tailwind.
+- The frontend calls relative /api endpoints through src/lib/api/*.ts. This is good: the
+  browser API contract can remain mostly unchanged after the backend moves to a Worker.
+- The production frontend currently builds to dist/.
+
+Backend
+- Node/Express application in server/index.js with 222 registered route handlers.
+- Authentication, authorization, public storefront, admin, teams, catalog, operations,
+  billing, Square, PayPal, webhooks, uploads, and email run in the same long-lived Node process.
+- Zod schemas in server/schemas/index.js can be retained.
+
+Database topology
+- Prisma is configured for SQLite in prisma/schema.prisma.
+- One master SQLite database stores global accounts, account users, sessions, billing,
+  super-admin data, bans, and global records.
+- One separate SQLite database is created for every business account. The current storage
+  directory has five account databases.
+- Current approximate source data sizes:
+  * master database: 20 MB
+  * account databases combined: about 11 MB
+- server/lib/accountDb.js dynamically creates and caches one Prisma client per account.
+- server/index.js uses AsyncLocalStorage plus a Proxy to make the current account database
+  appear as the default Prisma connection.
+
+Persistent files and blobs
+- Local persistent folders are storage/store-media and storage/store-fonts.
+- Express currently publishes those folders through /store-media and /store-fonts.
+- Storefront uploads use server/routes/storefrontRoutes.js and write files with node:fs.
+- Several database fields also contain image data or data URIs, including product images,
+  employee pictures, mold images, storefront logo/banner/background, and appeal evidence.
+
+Node-only or server-state dependencies
+- express, cors, PrismaClient, AsyncLocalStorage, node:fs, node:path, process.cwd(),
+  process.env, app.listen(), and an in-memory public write rate-limit Map.
+- nodemailer SMTP transport in server/lib/storeEmail.js.
+- Square Node SDK and PayPal REST calls in payment routes.
+- Webhook handlers use Express raw-body middleware and Node Buffer.
+- Tests start a separate Node process, use local SQLite files, and call Prisma directly.
+
+Large conversion hotspots
+- server/routes/protectedAuthRoutes.js: 1,052 lines.
+- server/routes/publicRoutes/storeCommerceRoutes.js: 878 lines.
+- server/routes/storefrontRoutes.js: 768 lines.
+- server/lib/init/accountTables.js: 706 lines of schema setup.
+- Prisma schema: 584 lines.
+- Customer account UI: 1,311 lines; frontend-only and not blocked by Cloudflare.
+
+
+2. RECOMMENDED TARGET ARCHITECTURE
+
+Use one Cloudflare Worker application, not separate Pages and Express deployments.
+
+Worker responsibilities
+- Serve the Vite SPA through Workers Static Assets.
+- Route /api/* requests through Worker handlers.
+- Bind one primary D1 database as DB.
+- Bind one R2 bucket as STORE_MEDIA.
+- Use Cloudflare secrets for payment, email, and admin credentials.
+- Use a Queue for transactional email and other non-critical post-request tasks.
+- Add Cron Triggers later for reservation expiration, subscription reminders, cleanup, and
+  retryable maintenance work.
+
+Recommended data model: one D1 database with account_id scoping
+- Do NOT reproduce the current runtime-created SQLite file per account as the first Cloudflare
+  design. A Worker receives named bindings, while the current code chooses a database file at
+  runtime and caches Prisma clients. That pattern does not translate cleanly to a D1 binding.
+- Create one D1 database containing the master tables and all account tables.
+- Add NOT NULL account_id to every current account-owned table.
+- Add account_id to every account-owned unique key and index. Example: StoreCustomer email
+  becomes UNIQUE(account_id, email), and StoreOrder order_number becomes
+  UNIQUE(account_id, order_number).
+- Keep global tables without account_id: Account, AccountUser, AuthSession, BillingConfig,
+  BillingCheckoutSession, global admin/ban data, and any truly global fragrance catalog data.
+- Every account-facing repository method must accept accountId explicitly and bind it in every
+  query. There must be no implicit current-account database or global mutable database client.
+- This is safe for the current data volume and well below D1's 10 GB per-database ceiling.
+- If account growth later requires physical tenant isolation, plan that as a second project with
+  a deliberate account-to-database routing registry. Do not add that complexity before it is
+  needed.
+
+R2 media design
+- Replace local storage/store-media and storage/store-fonts with R2 object keys.
+- Suggested object-key layout:
+  * accounts/{accountId}/media/{uuid}.{extension}
+  * accounts/{accountId}/fonts/{uuid}.{extension}
+  * accounts/{accountId}/evidence/{uuid}.{extension}
+  * system/giftcard.png
+- Add a MediaObject table to D1 if uploads need ownership, MIME type, size, created time,
+  visibility, and deletion tracking.
+- Move base64/data-URI images out of D1 as part of import. Save an R2 key or Worker media URL
+  instead. This avoids large request bodies, row bloat, slow D1 serialization, and memory use.
+- Public storefront images may be served by a Worker /store-media/* route with cache headers or
+  by a carefully configured public R2 custom domain. Private evidence must remain Worker-gated.
+
+
+3. REQUIRED BACKEND CONVERSIONS
+
+3.1 Replace Express with a Worker router
+- Replace server/index.js with src/worker.ts or worker/index.ts using the Fetch API.
+- Hono is a reasonable optional router choice, but plain Worker fetch routing is also valid.
+- Convert Express request/response usage to Request, Response, Headers, and Response.json().
+- Replace app.use middleware with explicit Worker middleware functions for CORS, JSON parsing,
+  error translation, authentication, account scope, feature permissions, and rate limiting.
+- Preserve every current public URL and HTTP method first. This prevents frontend rewrites from
+  being mixed into the infrastructure conversion.
+- Serve the SPA fallback only after API and R2 media paths are handled.
+
+3.2 Replace Prisma and raw SQLite access with a D1 repository layer
+- Remove @prisma/client, prisma CLI generation, PrismaClient construction, and DATABASE_URL.
+- Add a small database adapter/repository layer. Required operations:
+  * first(sql, values) for one row.
+  * all(sql, values) for a result set.
+  * run(sql, values) for mutations.
+  * batch(statements) for grouped writes.
+- Use env.DB.prepare(sql).bind(...values) for all variable input. Do not concatenate customer,
+  account, table, or identifier values into SQL.
+- Convert every Prisma $queryRaw and $executeRaw tagged query manually. This repo has heavy raw
+  SQL usage in auth, storefront commerce, super-admin, team, and operations routes.
+- Convert current Prisma transactions to D1 batch calls where the statements can be grouped.
+  For order creation, stock reservation, gift-card redemption, and payment finalization, define
+  idempotency keys and test transaction semantics before release.
+- Replace date conversion helpers with explicit ISO 8601 TEXT storage or integer epoch storage.
+  Do not rely on Prisma DateTime conversion behavior.
+- Retain SQLite-compatible SQL only after testing it against D1. Remove startup PRAGMA commands,
+  Prisma-specific behavior, and assumptions about local connection lifetime.
+
+3.3 Remove account database selection and process caches
+- Delete server/lib/accountDb.js, accountPrismaCache, AsyncLocalStorage, Prisma Proxy routing,
+  getAccountPrisma(), and filesystem account database deletion.
+- Replace deleteAccountDatabase(accountId) with a D1 transactional/account-scoped deletion plan
+  and R2 prefix deletion job. Do not delete completed accounting records if retention rules apply.
+- Update every route context dependency that currently expects prisma/masterPrisma/accountPrisma.
+  It should receive env.DB and an explicit auth.account_id instead.
+
+3.4 Replace schema-on-startup with versioned D1 migrations
+- Convert server/lib/init/coreTables.js, accountTables.js, and legacyUpgrades.js into ordered
+  migrations under migrations/0001_*.sql, migrations/0002_*.sql, and so on.
+- Never run CREATE TABLE or ALTER TABLE migrations on every live request or Worker startup.
+- Preserve foreign keys, indexes, unique constraints, and current defaults.
+- Create an inventory of every table from both the master and account SQLite files before writing
+  migrations. The Prisma schema is not the only source of truth because legacy upgrade scripts
+  add more tables and columns.
+- Replace super-admin sqlite_master inspection with an explicit allow-listed schema catalog or
+  D1-compatible metadata inspection. Never expose arbitrary SQL execution to a browser.
+
+3.5 Convert uploads and static media
+- Remove Express static middleware and node:fs/path writes.
+- Change storefront image/font upload endpoints to validate MIME type, extension, byte size, and
+  account ownership, then write an R2 object.
+- Replace src/components/storefrontBuilder/assetUtils.ts base64 upload paths with either:
+  * Worker-mediated multipart uploads for small files, or
+  * direct R2 signed upload URLs for larger assets.
+- Preserve the current 8 MB JSON/API limit only where still appropriate. Prefer binary uploads;
+  base64 adds unnecessary payload size.
+- Move public/giftcard.png to public assets if it is a fixed app asset, or store it in R2 only if
+  owners must replace it.
+
+3.6 Convert authentication and security
+- Replace process.env use with typed Worker env bindings and Wrangler secrets.
+- Remove dangerous code defaults, especially the fallback super-admin email/password in
+  server/index.js. Production must fail closed when required secrets are absent.
+- Replace the in-memory publicWriteRateBuckets Map. It is per-isolate and cannot enforce a
+  global limit. Use a Durable Object for strict IP/user rate limiting, or Cloudflare WAF/rate
+  limiting rules for edge enforcement.
+- Replace socket IP access with Cloudflare request headers/metadata only after configuring the
+  Worker behind Cloudflare. Do not trust arbitrary forwarded headers.
+- Retain password hashes and verify legacy hashes during migration. Choose a Worker-compatible
+  password implementation and write tests against existing hashes before changing algorithms.
+- Store auth sessions in D1 initially; rotate tokens, set expiration, and continue using secure
+  Authorization headers or move deliberately to secure HttpOnly cookies.
+- Revalidate all account_id ownership checks after consolidation. Account isolation is the most
+  important regression risk in this conversion.
+
+3.7 Payments, webhooks, and email
+- Square and PayPal REST calls can remain server-side Worker fetch calls. Keep provider secrets
+  in Wrangler secrets, never in Vite variables or browser responses.
+- Evaluate removing the Square Node SDK in favor of Square's HTTPS APIs and Web Crypto webhook
+  verification. This avoids relying on Node compatibility and reduces Worker bundle risk.
+- Replace Node Buffer base64 operations with Web APIs or Worker-compatible helpers.
+- Convert Express raw webhook middleware to request.arrayBuffer() or request.text() and verify
+  signatures against the untouched body.
+- Keep PaymentWebhookEvent/provider event uniqueness in D1 for idempotent webhook processing.
+- Do not mark an order paid based only on a client success response. Preserve provider capture
+  and webhook reconciliation as authoritative paths.
+- Replace nodemailer SMTP with an HTTP transactional-email provider. Queue emails and retries
+  with Cloudflare Queues so a slow provider does not delay checkout or route responses.
+- Convert StoreEmailEvent to a durable outbox: insert event in D1 with the business mutation,
+  enqueue after commit, and update its delivery state from the queue consumer.
+
+3.8 Background and scheduled work
+- The current backend has no production server cron. Some UI polling/timers are browser-only and
+  can remain unchanged.
+- Add Workers Cron Triggers for expired order reservations, pending checkout cleanup, subscription
+  fulfillment reminders, back-in-stock delivery retries, stale sessions, and R2 orphan cleanup
+  only after the core migration works.
+- Use Queues for emails, optional media processing, migration backfills, and long fan-out work.
+- Keep Worker request handlers short; do not scrape catalogs, import large files, or scan all
+  accounts inside a normal customer request.
+
+
+4. DATABASE MIGRATION PLAN
+
+Phase A - Inventory and backup
+1. Stop writes during the final migration window, or implement a temporary read-only mode.
+2. Copy storage/master/candles-business.db, every storage/accounts/*.db, all R2 candidate media,
+   .env key names (not secret values), and migration logs to encrypted offline backups.
+3. Record row counts for every source table and per-account table.
+4. Record source checksums and create a migration audit report.
+
+Phase B - Build target schema
+1. Create a D1 development database and production database.
+2. Write a normalized baseline migration that combines master and account tables.
+3. Add account_id and compound indexes to all tenant tables.
+4. Add migration metadata: source_database, source_account_id, source_primary_key, migrated_at.
+5. Add data integrity constraints before importing production data.
+
+Phase C - Build a one-time Node import tool
+- Keep this tool outside the Worker because it needs read access to the existing local SQLite files.
+- Use the current Prisma/SQLite reader only for this one-time import utility, or use a local
+  SQLite export tool.
+- Import master rows first: accounts, users, sessions, billing, bans, roles, and global catalog.
+- Import account rows second, adding the owning account_id to every row.
+- Maintain original IDs where possible so existing foreign-key relations and URLs remain valid.
+- Upload media to R2 before or during row import and replace old file/data-URI references.
+- Chunk imports well below Worker/D1 request limits. Use Wrangler D1 execute/import workflows or
+  an authenticated bulk-import Worker endpoint designed for resumable batches.
+- Make the importer idempotent and resumable. It must be safe to re-run a failed batch.
+
+Phase D - Verify imported data
+- Compare counts by account and table.
+- Verify logins for owner, employee, admin, super-admin, and storefront customer accounts.
+- Verify product images, fonts, storefront logo/banner/background, and uploaded assets resolve
+  from R2.
+- Verify gift-card balances, customer credits, reward totals, order totals, stock reservations,
+  subscriptions, and billing sessions.
+- Verify public storefront slugs resolve to the correct account only.
+- Verify one account cannot access another account's data through every protected endpoint.
+
+Phase E - Cutover and rollback
+- Deploy a staging Worker against a staging D1/R2 copy first.
+- Point a staging hostname at the Worker and run full API/browser payment sandbox tests.
+- During production cutover: block writes, run final delta import, validate counts, deploy Worker,
+  configure routes/custom domain, then re-enable writes.
+- Keep the old local deployment and immutable SQLite backups available until acceptance testing
+  and a documented rollback window have passed.
+
+
+5. FRONTEND AND BUILD CONVERSION
+
+- Retain React components and src/lib/api client contracts where endpoint URLs do not change.
+- Add Wrangler and Cloudflare Workers TypeScript types.
+- Add a Worker entrypoint and Wrangler configuration file.
+- Configure Workers Static Assets for dist/ with SPA fallback. Do not use deprecated Workers Sites.
+- Update Vite development setup so local API requests target wrangler dev rather than node
+  server/index.js. Keep an optional local frontend-only Vite dev command.
+- Replace start.bat with explicit local commands such as npm run dev:worker and npm run dev:web,
+  or use the Cloudflare Vite plugin after the worker architecture is established.
+- Keep public configuration values such as Square application ID and PayPal client ID intentionally
+  exposed only through a controlled config endpoint or Vite public variables. Keep all secrets
+  server-only.
+- Review the current 5 MB upload UI and data-URL preview paths after R2 conversion.
+
+
+6. TESTING AND OPERATIONS CONVERSION
+
+Tests
+- Replace server/tests/storefront.integration.test.js Node spawn + Prisma tests with Worker tests
+  using local D1/R2 bindings. The Cloudflare Vitest pool is the recommended test environment.
+- Preserve the existing 8 integration scenarios and add tests for:
+  * Cross-account isolation for every account-scoped route.
+  * D1 batch failure behavior for stock, order, gift-card, and payment mutations.
+  * R2 upload authorization, MIME checks, size limits, and public/private object access.
+  * Square and PayPal webhook signature verification against raw request bodies.
+  * Email outbox and queue retry behavior.
+  * Rate limiting across more than one Worker invocation.
+  * D1 migration/up/down or restore verification using an empty database and imported fixture.
+
+Observability
+- Add structured JSON logs with request ID, account ID, route, status, latency, and provider ID.
+- Configure Workers Logs/Tail Workers or Logpush before production cutover.
+- Track D1 query latency, errors, row counts, R2 errors, queue failures, payment webhook failures,
+  and unauthorized cross-account access attempts.
+- Add a health endpoint that checks only required bindings/configuration and does not reveal secrets.
+
+Backups and retention
+- Create a documented D1 export/backup schedule and R2 object lifecycle/versioning plan.
+- Store migration reports and payment webhook audit records for the required retention period.
+- Do not treat D1 or R2 as a replacement for a tested backup and restore process.
+
+
+7. CLOUD FLARE RESOURCES AND SECRETS TO CREATE
+
+Required resources
+- 1 Worker application for API + static SPA.
+- 1 primary D1 database for the consolidated schema.
+- 1 R2 bucket for storefront media, fonts, evidence, and migrated images.
+- 1 Queue for transactional email/outbox work.
+- Optional Durable Object namespace for strict rate limiting and other strong-consistency counters.
+- Optional Cron Triggers after core cutover.
+- A custom domain/route for the app and optional dedicated public media hostname.
+
+Required secret migration
+- PAYPAL_CLIENT_ID
+- PAYPAL_CLIENT_SECRET
+- SQUARE_ACCESS_TOKEN
+- SQUARE_WEBHOOK_SIGNATURE_KEY
+- PAYPAL_WEBHOOK_ID
+- SUPERADMIN_EMAIL
+- SUPERADMIN_PASSWORD (replace with a safely provisioned admin flow before production)
+- SMTP credentials are replaced by the selected transactional-email provider API key.
+- Any future encryption, session-signing, or R2 presigning secrets.
+
+Non-secret Worker variables
+- APP_ORIGIN
+- PAYPAL_ENVIRONMENT
+- SQUARE_APPLICATION_ID
+- SQUARE_LOCATION_ID
+- SQUARE_ENVIRONMENT
+- Public media base URL, if using a custom R2 media domain.
+
+
+8. ITEMS THAT DO NOT NEED A CLOUDFLARE CONVERSION
+
+- Existing React page components, calculators, theme system, storefront menus, account tabs, and
+  other browser-only UI behavior do not need architectural changes.
+- Zod validation schemas can remain with only minor Request parsing changes.
+- Existing route names and frontend API wrappers can remain if Worker endpoints preserve them.
+- Browser polling and UI timers remain browser functionality; they are not server background jobs.
+- The Supabase folder is legacy material and should remain unused; this Cloudflare plan does not
+  reintroduce Supabase.
+
+
+9. IMPORTANT RISKS AND DECISIONS
+
+HIGH RISK: Account isolation
+- Consolidating tenant databases is the correct first step but requires account_id on every query,
+  index, unique constraint, and foreign-key path. Missing one condition can expose data across
+  businesses. Build automated isolation tests before importing production data.
+
+HIGH RISK: Commerce mutations
+- Checkout, stock reservation, gift-card redemption, customer credits, payment capture, refunds,
+  and webhook reconciliation require careful idempotency and D1 transaction/batch tests.
+
+HIGH RISK: Media migration
+- Database data URIs and storage file URLs must be catalogued and migrated to R2 without broken
+  storefront images. Do not delete local media until automated URL verification passes.
+
+HIGH RISK: Admin database explorer
+- The current super-admin tooling inspects SQLite metadata. It must not become arbitrary D1 SQL
+  access from a browser. Use an allow-listed admin API with role checks and audit logging.
+
+MEDIUM RISK: Node compatibility
+- Workers supports a subset of Node APIs, but its filesystem is virtual/in-memory and cannot be
+  used for persistent account databases or uploads. Treat Node compatibility as a migration aid,
+  not a reason to carry Express/Prisma/filesystem architecture into production.
+
+MEDIUM RISK: Email and webhooks
+- SMTP/nodemailer and Express raw-body middleware need deliberate replacements. Test real provider
+  sandbox callbacks before enabling production billing.
+
+DECISION REQUIRED BEFORE IMPLEMENTATION
+- Confirm the account model: recommended single D1 with account_id versus a later tenant-sharded
+  D1 approach. This plan assumes the recommended single D1 model.
+- Choose the transactional email provider.
+- Decide whether public assets use a Worker media route or an R2 custom domain.
+- Decide whether strict rate limiting needs Durable Objects or can use Cloudflare WAF/rate rules.
+- Confirm a staging Cloudflare account/domain and production cutover window.
+
+
+10. IMPLEMENTATION ORDER
+
+1. Create staging Cloudflare resources and Wrangler configuration; do not touch production data.
+2. Add Worker entrypoint, static asset serving, typed env bindings, and /api/health.
+3. Create D1 schema migrations for the consolidated account_id model.
+4. Build D1 repository helpers and migrate authentication/account scope first.
+5. Migrate core operations routes: products, supplies, recipes, calculators, batches, teams.
+6. Migrate storefront setup and all R2 upload/media routes.
+7. Migrate public storefront, customers, orders, gift cards, rewards, and fulfillment flows.
+8. Migrate Square/PayPal payment and webhook paths, then run sandbox tests.
+9. Add email queue/outbox, rate limit implementation, cron jobs, logs, and backups.
+10. Build importer, import staging data, run complete tests, then schedule production cutover.
+
+
+11. OFFICIAL CLOUDFLARE REFERENCES CONSULTED
+
+- D1 Worker Binding API: https://developers.cloudflare.com/d1/worker-api/
+- D1 prepared statements: https://developers.cloudflare.com/d1/worker-api/prepared-statements/
+- D1 FAQ and scaling limits: https://developers.cloudflare.com/d1/reference/faq/
+- R2 Worker API: https://developers.cloudflare.com/r2/api/workers/workers-api-reference/
+- Workers Static Assets: https://developers.cloudflare.com/workers/static-assets/
+- Workers Vite plugin: https://developers.cloudflare.com/workers/vite-plugin/
+- Workers runtime and Node compatibility: https://developers.cloudflare.com/workers/runtime-apis/nodejs/
+- Workers filesystem limitations: https://developers.cloudflare.com/workers/runtime-apis/nodejs/fs/
+- Workers platform limits: https://developers.cloudflare.com/workers/platform/limits/
+- Cloudflare Queues: https://developers.cloudflare.com/queues/reference/how-queues-works/
+
+END OF CLOUD CONVERSION PLAN

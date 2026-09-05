@@ -1,0 +1,969 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --app-bg-start: #f9fafb;
+  --app-bg-end: #f3f4f6;
+  --surface: #ffffff;
+  --surface-soft: #f9fafb;
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --border-main: #e5e7eb;
+  --wick-preview-fill: #f8fafc;
+  --wick-preview-stroke: #0f172a;
+  --wick-preview-dot: #020617;
+  --control-muted-bg: #e5e7eb;
+  --control-muted-hover: #d1d5db;
+  --control-muted-text: #111827;
+  --control-muted-border: #d1d5db;
+  --control-primary-bg: #2563eb;
+  --control-primary-hover: #1d4ed8;
+  --control-primary-text: #ffffff;
+  --control-success-bg: #16a34a;
+  --control-success-hover: #15803d;
+  --control-success-text: #ffffff;
+  --control-danger-bg: #dc2626;
+  --control-danger-hover: #b91c1c;
+  --control-danger-text: #ffffff;
+  --control-warn-bg: #ffedd5;
+  --control-warn-hover: #fed7aa;
+  --control-warn-text: #9a3412;
+  --tab-hover-bg: rgba(15, 23, 42, 0.06);
+}
+
+html[data-theme-mode='light'][data-theme-name='classic'] {
+  --app-bg-start: #f9fafb;
+  --app-bg-end: #f3f4f6;
+  --surface: #ffffff;
+  --surface-soft: #f9fafb;
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --border-main: #e5e7eb;
+  --wick-preview-fill: #f1f5f9;
+  --wick-preview-stroke: #0f172a;
+  --wick-preview-dot: #020617;
+}
+
+html[data-theme-mode='light'][data-theme-name='sunset'] {
+  --app-bg-start: #fff7ed;
+  --app-bg-end: #ffedd5;
+  --surface: #fffaf5;
+  --surface-soft: #fff1e6;
+  --text-main: #3f1d0f;
+  --text-muted: #7c4a33;
+  --border-main: #fdba74;
+  --wick-preview-fill: #ffedd5;
+  --wick-preview-stroke: #7c2d12;
+  --wick-preview-dot: #431407;
+  --control-muted-bg: #ffedd5;
+  --control-muted-hover: #fed7aa;
+  --control-muted-text: #7c2d12;
+  --control-muted-border: #fdba74;
+  --control-primary-bg: #ea580c;
+  --control-primary-hover: #c2410c;
+  --control-primary-text: #fff7ed;
+  --control-success-bg: #15803d;
+  --control-success-hover: #166534;
+  --control-success-text: #ecfdf5;
+  --control-danger-bg: #c2410c;
+  --control-danger-hover: #9a3412;
+  --control-danger-text: #fff7ed;
+  --control-warn-bg: #fff7ed;
+  --control-warn-hover: #ffedd5;
+  --control-warn-text: #9a3412;
+  --tab-hover-bg: rgba(251, 146, 60, 0.16);
+}
+
+html[data-theme-mode='light'][data-theme-name='mint'] {
+  --app-bg-start: #ecfeff;
+  --app-bg-end: #d1fae5;
+  --surface: #f0fdfa;
+  --surface-soft: #e6fffa;
+  --text-main: #0b3b3a;
+  --text-muted: #2f6764;
+  --border-main: #99f6e4;
+  --wick-preview-fill: #ccfbf1;
+  --wick-preview-stroke: #0f766e;
+  --wick-preview-dot: #134e4a;
+  --control-muted-bg: #ccfbf1;
+  --control-muted-hover: #99f6e4;
+  --control-muted-text: #115e59;
+  --control-muted-border: #5eead4;
+  --control-primary-bg: #0f766e;
+  --control-primary-hover: #115e59;
+  --control-primary-text: #f0fdfa;
+  --control-success-bg: #15803d;
+  --control-success-hover: #166534;
+  --control-success-text: #ecfdf5;
+  --control-danger-bg: #b91c1c;
+  --control-danger-hover: #991b1b;
+  --control-danger-text: #fef2f2;
+  --control-warn-bg: #fef3c7;
+  --control-warn-hover: #fde68a;
+  --control-warn-text: #92400e;
+  --tab-hover-bg: rgba(20, 184, 166, 0.16);
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] {
+  --app-bg-start: #0f172a;
+  --app-bg-end: #111827;
+  --surface: #111827;
+  --surface-soft: #1f2937;
+  --text-main: #f3f4f6;
+  --text-muted: #cbd5e1;
+  --border-main: #334155;
+  --wick-preview-fill: #1e293b;
+  --wick-preview-stroke: #93c5fd;
+  --wick-preview-dot: #dbeafe;
+  --control-muted-bg: #334155;
+  --control-muted-hover: #475569;
+  --control-muted-text: #e2e8f0;
+  --control-muted-border: #64748b;
+  --control-primary-bg: #2563eb;
+  --control-primary-hover: #1d4ed8;
+  --control-primary-text: #eff6ff;
+  --control-success-bg: #16a34a;
+  --control-success-hover: #15803d;
+  --control-success-text: #f0fdf4;
+  --control-danger-bg: #dc2626;
+  --control-danger-hover: #b91c1c;
+  --control-danger-text: #fef2f2;
+  --control-warn-bg: #7c2d12;
+  --control-warn-hover: #9a3412;
+  --control-warn-text: #ffedd5;
+  --tab-hover-bg: rgba(96, 165, 250, 0.14);
+}
+
+html[data-theme-mode='dark'][data-theme-name='forest'] {
+  --app-bg-start: #052e16;
+  --app-bg-end: #064e3b;
+  --surface: #07261b;
+  --surface-soft: #0f3b2a;
+  --text-main: #ecfdf5;
+  --text-muted: #bbf7d0;
+  --border-main: #166534;
+  --wick-preview-fill: #14532d;
+  --wick-preview-stroke: #86efac;
+  --wick-preview-dot: #dcfce7;
+  --control-muted-bg: #14532d;
+  --control-muted-hover: #166534;
+  --control-muted-text: #dcfce7;
+  --control-muted-border: #22c55e;
+  --control-primary-bg: #0f766e;
+  --control-primary-hover: #115e59;
+  --control-primary-text: #ecfeff;
+  --control-success-bg: #16a34a;
+  --control-success-hover: #15803d;
+  --control-success-text: #f0fdf4;
+  --control-danger-bg: #b91c1c;
+  --control-danger-hover: #991b1b;
+  --control-danger-text: #fee2e2;
+  --control-warn-bg: #3f6212;
+  --control-warn-hover: #4d7c0f;
+  --control-warn-text: #f7fee7;
+  --tab-hover-bg: rgba(74, 222, 128, 0.14);
+}
+
+html[data-theme-mode='dark'][data-theme-name='ember'] {
+  --app-bg-start: #1f130d;
+  --app-bg-end: #3b1d12;
+  --surface: #2a170f;
+  --surface-soft: #3a2217;
+  --text-main: #fff7ed;
+  --text-muted: #fed7aa;
+  --border-main: #7c2d12;
+  --wick-preview-fill: #7c2d12;
+  --wick-preview-stroke: #fdba74;
+  --wick-preview-dot: #ffedd5;
+  --control-muted-bg: #7c2d12;
+  --control-muted-hover: #9a3412;
+  --control-muted-text: #ffedd5;
+  --control-muted-border: #fb923c;
+  --control-primary-bg: #c2410c;
+  --control-primary-hover: #9a3412;
+  --control-primary-text: #fff7ed;
+  --control-success-bg: #15803d;
+  --control-success-hover: #166534;
+  --control-success-text: #f0fdf4;
+  --control-danger-bg: #dc2626;
+  --control-danger-hover: #b91c1c;
+  --control-danger-text: #fef2f2;
+  --control-warn-bg: #7c2d12;
+  --control-warn-hover: #9a3412;
+  --control-warn-text: #ffedd5;
+  --tab-hover-bg: rgba(251, 146, 60, 0.14);
+}
+
+.app-theme {
+  background: linear-gradient(135deg, var(--app-bg-start), var(--app-bg-end));
+  color: var(--text-main);
+}
+
+.app-theme .bg-white {
+  background-color: var(--surface) !important;
+}
+
+.app-theme .bg-gray-50 {
+  background-color: var(--surface-soft) !important;
+}
+
+.app-theme .bg-slate-50,
+.app-theme .bg-pink-50 {
+  background-color: var(--surface-soft) !important;
+}
+
+.app-theme .candle-care-accent {
+  background-color: var(--control-warn-bg);
+  color: var(--control-warn-text);
+}
+
+.app-theme .candle-care-product,
+.app-theme .candle-care-planner {
+  background-color: var(--surface-soft);
+  border-color: var(--border-main);
+  color: var(--text-main);
+}
+
+.app-theme .candle-care-result {
+  background-color: var(--surface);
+  color: var(--text-main);
+}
+
+.app-theme .candle-care-link {
+  color: var(--control-primary-bg);
+}
+
+.app-theme .border-gray-100,
+.app-theme .border-gray-200,
+.app-theme .border-gray-300,
+.app-theme .border-slate-200,
+.app-theme .border-slate-300,
+.app-theme .border-pink-200,
+.app-theme .border-pink-300 {
+  border-color: var(--border-main) !important;
+}
+
+.app-theme .text-gray-900,
+.app-theme .text-gray-800,
+.app-theme .text-gray-700,
+.app-theme .text-slate-900,
+.app-theme .text-slate-800,
+.app-theme .text-slate-700 {
+  color: var(--text-main) !important;
+}
+
+.app-theme .text-gray-600,
+.app-theme .text-gray-500,
+.app-theme .text-slate-600,
+.app-theme .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+.app-theme .text-pink-700,
+.app-theme .text-pink-800,
+.app-theme .text-pink-900,
+.app-theme .text-pink-950 {
+  color: var(--control-primary-bg) !important;
+}
+
+.app-theme .bg-pink-600 {
+  background-color: var(--control-primary-bg) !important;
+  color: var(--control-primary-text) !important;
+}
+
+.app-theme .border-pink-600 {
+  border-color: var(--control-primary-bg) !important;
+}
+
+.app-theme .hover\:bg-pink-700:hover,
+.app-theme .hover\:bg-pink-600:hover {
+  background-color: var(--control-primary-hover) !important;
+}
+
+/* Ensure hover utility classes still work under theme color overrides. */
+.app-theme button.hover\:text-black:hover {
+  color: #000000 !important;
+}
+
+.app-theme button.hover\:text-sky-400:hover {
+  color: #38bdf8 !important;
+}
+
+.app-theme button.hover\:text-gray-900:hover {
+  color: var(--text-main) !important;
+}
+
+.app-theme button.hover\:bg-gray-50:hover {
+  background-color: var(--surface-soft) !important;
+}
+
+.app-theme .main-tab-btn.hover\:bg-gray-50:hover {
+  background-color: var(--tab-hover-bg) !important;
+}
+
+/* Form controls follow the active theme while retaining readable contrast. */
+html[data-theme-mode='dark'] .app-theme input,
+html[data-theme-mode='dark'] .app-theme select,
+html[data-theme-mode='dark'] .app-theme textarea {
+  background-color: var(--surface) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-main) !important;
+}
+
+html[data-theme-mode='dark'] .app-theme input::placeholder,
+html[data-theme-mode='dark'] .app-theme textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme-mode='dark'] .app-theme select option {
+  color: var(--text-main);
+  background-color: var(--surface);
+}
+
+/* Public storefront customer account controls use the same palette as the active app theme. */
+.app-theme .store-customer-trigger,
+.app-theme .store-customer-modal {
+  color: var(--text-main);
+}
+
+.app-theme .store-main-menu-item {
+  display: block;
+  width: 100%;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--text-main) !important;
+}
+
+.app-theme .store-main-menu-item:hover,
+.app-theme .store-main-menu-item:focus-visible {
+  background-color: var(--surface-soft) !important;
+  color: var(--text-main) !important;
+}
+
+.app-theme .store-menu-category:hover,
+.app-theme .store-menu-category:focus-visible {
+  background-color: var(--control-muted-bg) !important;
+  color: var(--control-muted-text) !important;
+}
+
+.app-theme .scent-poll-heading {
+  color: #be123c !important;
+}
+
+.app-theme .store-customer-modal .bg-white,
+.app-theme .store-customer-modal .bg-slate-50,
+.app-theme .store-customer-modal .bg-slate-100,
+.app-theme .store-customer-trigger.bg-white {
+  background-color: var(--surface) !important;
+}
+
+.app-theme .store-customer-tone-card {
+  background-color: var(--surface-soft) !important;
+  border-color: var(--border-main) !important;
+  color: var(--text-main) !important;
+}
+
+.app-theme .store-customer-modal .border-slate-200,
+.app-theme .store-customer-modal .border-slate-300,
+.app-theme .store-customer-trigger.border-slate-200 {
+  border-color: var(--border-main) !important;
+}
+
+.app-theme .store-customer-modal .text-slate-900,
+.app-theme .store-customer-modal .text-slate-800,
+.app-theme .store-customer-modal .text-slate-700,
+.app-theme .store-customer-trigger.text-slate-800 {
+  color: var(--text-main) !important;
+}
+
+.app-theme .store-customer-modal .text-slate-600,
+.app-theme .store-customer-modal .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+.app-theme .store-customer-modal button.bg-pink-600 {
+  background-color: var(--control-primary-bg) !important;
+  color: var(--control-primary-text) !important;
+}
+
+.app-theme .store-customer-modal button.bg-pink-600:hover {
+  background-color: var(--control-primary-hover) !important;
+}
+
+/* Keep the public fragrance library aligned with the active application theme. */
+.app-theme .fragrance-oil-catalog {
+  color: var(--text-main);
+}
+
+.app-theme .fragrance-oil-card {
+  border-color: var(--border-main);
+  color: var(--text-main);
+}
+
+.app-theme .fragrance-oil-card:hover,
+.app-theme .fragrance-oil-card-selected {
+  border-color: var(--control-primary-bg);
+}
+
+.app-theme .fragrance-oil-card-selected {
+  background-color: var(--surface-soft);
+}
+
+.app-theme .fragrance-oil-pack-size {
+  border-color: var(--border-main);
+  color: var(--text-main);
+}
+
+.app-theme .fragrance-oil-pack-size-selected {
+  background-color: var(--control-primary-bg);
+  border-color: var(--control-primary-bg);
+  color: var(--control-primary-text);
+}
+
+.app-theme .fragrance-oil-floating-action {
+  background-color: var(--surface);
+  border-color: var(--border-main);
+  color: var(--text-main);
+}
+
+.app-theme .fragrance-oil-checkbox {
+  accent-color: var(--control-primary-bg);
+}
+
+.app-theme .fragrance-oil-image {
+  background-color: var(--surface-soft);
+}
+
+.app-theme .fragrance-oil-config {
+  border-color: var(--border-main);
+}
+
+.app-theme .fragrance-oil-select {
+  background-color: var(--surface);
+  border-color: var(--border-main);
+  color: var(--text-main);
+}
+
+.app-theme .fragrance-oil-select option {
+  background-color: var(--surface);
+  color: var(--text-main);
+}
+
+html[data-theme-mode='dark'] .app-theme .fragrance-oil-select {
+  background-color: var(--surface) !important;
+  border-color: var(--border-main) !important;
+  color: var(--text-main) !important;
+}
+
+html[data-theme-mode='dark'] .app-theme .fragrance-oil-select option {
+  background-color: var(--surface) !important;
+  color: var(--text-main) !important;
+}
+
+.app-theme .fragrance-oil-discontinued {
+  color: var(--control-warn-text);
+}
+
+.app-theme .fragrance-oil-shipping-notice {
+  background-color: var(--control-warn-bg);
+  color: var(--control-warn-text);
+}
+
+.app-theme .store-customer-modal .text-pink-700 {
+  color: var(--control-primary-bg) !important;
+}
+
+.app-theme .store-customer-modal .hover\:bg-slate-100:hover,
+.app-theme .store-customer-trigger.hover\:bg-slate-50:hover {
+  background-color: var(--surface-soft) !important;
+}
+
+/* Disabled controls should look intentionally locked in all themes. */
+.app-theme input:disabled,
+.app-theme select:disabled,
+.app-theme textarea:disabled {
+  background-color: var(--control-muted-bg) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--control-muted-border) !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+}
+
+html[data-theme-mode='dark'] .app-theme input:disabled,
+html[data-theme-mode='dark'] .app-theme select:disabled,
+html[data-theme-mode='dark'] .app-theme textarea:disabled {
+  background-color: var(--control-muted-bg) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--control-muted-border) !important;
+}
+
+/* Theme-tinted summary cards (Wax + Wick calculators). */
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .wax-summary-card-wax,
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .wax-summary-card-fragrance,
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .wick-summary-card {
+  background-color: rgba(219, 234, 254, 0.65) !important;
+  border-color: rgba(147, 197, 253, 0.75) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .wax-summary-card-wax,
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .wax-summary-card-fragrance,
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .wick-summary-card {
+  background-color: rgba(255, 237, 213, 0.7) !important;
+  border-color: rgba(251, 146, 60, 0.65) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .wax-summary-card-wax,
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .wax-summary-card-fragrance,
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .wick-summary-card {
+  background-color: rgba(204, 251, 241, 0.75) !important;
+  border-color: rgba(45, 212, 191, 0.6) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .wax-summary-card-wax {
+  background-color: rgba(37, 99, 235, 0.25) !important;
+  border-color: rgba(59, 130, 246, 0.45) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .wax-summary-card-fragrance {
+  background-color: rgba(14, 116, 144, 0.28) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .wick-summary-card {
+  background-color: rgba(37, 99, 235, 0.24) !important;
+  border-color: rgba(59, 130, 246, 0.45) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .wax-summary-card-wax,
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .wax-summary-card-fragrance,
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .wick-summary-card {
+  background-color: rgba(21, 128, 61, 0.33) !important;
+  border-color: rgba(74, 222, 128, 0.42) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .wax-summary-card-wax,
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .wax-summary-card-fragrance,
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .wick-summary-card {
+  background-color: rgba(194, 65, 12, 0.3) !important;
+  border-color: rgba(251, 146, 60, 0.4) !important;
+}
+
+/* Theme-tinted custom wax blend builder card + hint text. */
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .wax-blend-builder-card {
+  background-color: rgba(219, 234, 254, 0.45) !important;
+  border-color: rgba(147, 197, 253, 0.75) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .wax-blend-builder-card {
+  background-color: rgba(255, 237, 213, 0.72) !important;
+  border-color: rgba(251, 146, 60, 0.7) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .wax-blend-builder-card {
+  background-color: rgba(204, 251, 241, 0.72) !important;
+  border-color: rgba(45, 212, 191, 0.65) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .wax-blend-builder-card {
+  background-color: rgba(30, 64, 175, 0.28) !important;
+  border-color: rgba(96, 165, 250, 0.55) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .wax-blend-builder-card {
+  background-color: rgba(21, 128, 61, 0.3) !important;
+  border-color: rgba(74, 222, 128, 0.48) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .wax-blend-builder-card {
+  background-color: rgba(194, 65, 12, 0.32) !important;
+  border-color: rgba(251, 146, 60, 0.5) !important;
+}
+
+.app-theme .wax-blend-hint-text {
+  color: var(--text-main) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .wax-blend-hint-box {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(147, 197, 253, 0.65) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .wax-blend-hint-box {
+  background-color: rgba(255, 251, 245, 0.76) !important;
+  border-color: rgba(251, 146, 60, 0.62) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .wax-blend-hint-box {
+  background-color: rgba(240, 253, 250, 0.76) !important;
+  border-color: rgba(20, 184, 166, 0.58) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .wax-blend-hint-box {
+  background-color: rgba(15, 23, 42, 0.42) !important;
+  border-color: rgba(96, 165, 250, 0.45) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .wax-blend-hint-box {
+  background-color: rgba(6, 78, 59, 0.38) !important;
+  border-color: rgba(74, 222, 128, 0.45) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .wax-blend-hint-box {
+  background-color: rgba(124, 45, 18, 0.38) !important;
+  border-color: rgba(251, 146, 60, 0.46) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .wax-blend-apply-btn {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(147, 197, 253, 0.85) !important;
+  color: #1e3a8a !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .wax-blend-apply-btn {
+  background-color: rgba(255, 251, 245, 0.92) !important;
+  border-color: rgba(251, 146, 60, 0.8) !important;
+  color: #9a3412 !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .wax-blend-apply-btn {
+  background-color: rgba(240, 253, 250, 0.92) !important;
+  border-color: rgba(20, 184, 166, 0.7) !important;
+  color: #0f766e !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .wax-blend-apply-btn {
+  background-color: rgba(30, 64, 175, 0.35) !important;
+  border-color: rgba(96, 165, 250, 0.7) !important;
+  color: #dbeafe !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .wax-blend-apply-btn {
+  background-color: rgba(21, 128, 61, 0.35) !important;
+  border-color: rgba(74, 222, 128, 0.65) !important;
+  color: #dcfce7 !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .wax-blend-apply-btn {
+  background-color: rgba(194, 65, 12, 0.35) !important;
+  border-color: rgba(251, 146, 60, 0.68) !important;
+  color: #ffedd5 !important;
+}
+
+.app-theme .wax-blend-apply-btn:hover {
+  filter: brightness(1.06);
+}
+
+.app-theme .modal-cancel-btn {
+  background-color: var(--surface-soft) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-main) !important;
+}
+
+.app-theme .modal-cancel-btn:hover {
+  filter: brightness(0.97);
+}
+
+/* Global control class theming for existing Tailwind utility buttons. */
+.app-theme button.bg-gray-200 {
+  background-color: var(--control-muted-bg) !important;
+  color: var(--control-muted-text) !important;
+  border: 1px solid var(--control-muted-border) !important;
+}
+
+.app-theme button.bg-gray-200:hover,
+.app-theme button.hover\:bg-gray-300:hover {
+  background-color: var(--control-muted-hover) !important;
+}
+
+.app-theme button.bg-blue-600,
+.app-theme button.border-blue-600.bg-blue-600 {
+  background-color: var(--control-primary-bg) !important;
+  color: var(--control-primary-text) !important;
+}
+
+.app-theme button.bg-blue-600:hover,
+.app-theme button.hover\:bg-blue-700:hover {
+  background-color: var(--control-primary-hover) !important;
+}
+
+.app-theme button.bg-green-600 {
+  background-color: var(--control-success-bg) !important;
+  color: var(--control-success-text) !important;
+}
+
+.app-theme button.bg-green-600:hover,
+.app-theme button.hover\:bg-green-700:hover {
+  background-color: var(--control-success-hover) !important;
+}
+
+.app-theme button.bg-red-600 {
+  background-color: var(--control-danger-bg) !important;
+  color: var(--control-danger-text) !important;
+}
+
+.app-theme button.bg-red-600:hover,
+.app-theme button.hover\:bg-red-700:hover {
+  background-color: var(--control-danger-hover) !important;
+}
+
+.app-theme button.bg-orange-100 {
+  background-color: var(--control-warn-bg) !important;
+  color: var(--control-warn-text) !important;
+}
+
+.app-theme button.bg-orange-100:hover,
+.app-theme button.hover\:bg-orange-200:hover {
+  background-color: var(--control-warn-hover) !important;
+}
+
+/* Paywall plan card readability across all themes. */
+.app-theme .paywall-shell {
+  background-color: var(--surface) !important;
+  border-color: var(--border-main) !important;
+}
+
+.app-theme .paywall-title,
+.app-theme .paywall-plan-title,
+.app-theme .paywall-plan-price {
+  color: var(--text-main) !important;
+}
+
+.app-theme .paywall-subtitle,
+.app-theme .paywall-plan-description,
+.app-theme .paywall-plan-price-unit,
+.app-theme .paywall-plan-currency {
+  color: var(--text-muted) !important;
+}
+
+.app-theme .paywall-plan-selected {
+  border-color: var(--control-primary-bg) !important;
+}
+
+html[data-theme-mode='light'] .app-theme .paywall-plan-selected {
+  background-color: color-mix(in srgb, var(--control-primary-bg) 16%, white 84%) !important;
+}
+
+html[data-theme-mode='dark'] .app-theme .paywall-plan-selected {
+  background-color: color-mix(in srgb, var(--control-primary-bg) 30%, var(--surface) 70%) !important;
+}
+
+.app-theme .paywall-plan-selected .paywall-plan-title,
+.app-theme .paywall-plan-selected .paywall-plan-price {
+  color: var(--text-main) !important;
+}
+
+.app-theme .paywall-plan-selected .paywall-plan-description,
+.app-theme .paywall-plan-selected .paywall-plan-price-unit,
+.app-theme .paywall-plan-selected .paywall-plan-currency {
+  color: var(--text-main) !important;
+  opacity: 0.9;
+}
+
+.app-theme .paywall-current-plan-btn {
+  background-color: var(--control-muted-bg) !important;
+  color: var(--control-muted-text) !important;
+  border: 1px solid var(--control-muted-border) !important;
+}
+
+.app-theme .paywall-help-toggle {
+  color: var(--control-primary-bg) !important;
+}
+
+.app-theme .paywall-help-toggle:hover {
+  filter: brightness(0.92);
+}
+
+.app-theme .paywall-help-shell {
+  background-color: color-mix(in srgb, var(--surface-soft) 84%, transparent 16%) !important;
+  border-color: var(--border-main) !important;
+}
+
+.app-theme .paywall-help-title,
+.app-theme .paywall-help-card-title {
+  color: var(--text-main) !important;
+}
+
+.app-theme .paywall-help-copy {
+  color: var(--text-muted) !important;
+}
+
+.app-theme .paywall-help-card {
+  border-color: var(--border-main) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .paywall-help-card-included,
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .paywall-help-card-pros,
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .paywall-help-card-cons {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .paywall-help-card-included {
+  background-color: rgba(255, 251, 245, 0.92) !important;
+  border-color: rgba(251, 146, 60, 0.4) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .paywall-help-card-pros {
+  background-color: rgba(236, 253, 245, 0.92) !important;
+  border-color: rgba(34, 197, 94, 0.35) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .paywall-help-card-cons {
+  background-color: rgba(255, 247, 237, 0.94) !important;
+  border-color: rgba(249, 115, 22, 0.42) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .paywall-help-card-included {
+  background-color: rgba(240, 253, 250, 0.94) !important;
+  border-color: rgba(20, 184, 166, 0.28) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .paywall-help-card-pros {
+  background-color: rgba(236, 253, 245, 0.94) !important;
+  border-color: rgba(34, 197, 94, 0.28) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .paywall-help-card-cons {
+  background-color: rgba(254, 252, 232, 0.94) !important;
+  border-color: rgba(245, 158, 11, 0.34) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .paywall-help-card-included {
+  background-color: rgba(30, 41, 59, 0.72) !important;
+  border-color: rgba(96, 165, 250, 0.28) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .paywall-help-card-pros {
+  background-color: rgba(20, 83, 45, 0.58) !important;
+  border-color: rgba(74, 222, 128, 0.24) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .paywall-help-card-cons {
+  background-color: rgba(120, 53, 15, 0.54) !important;
+  border-color: rgba(251, 191, 36, 0.22) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .paywall-help-card-included {
+  background-color: rgba(6, 78, 59, 0.44) !important;
+  border-color: rgba(45, 212, 191, 0.24) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .paywall-help-card-pros {
+  background-color: rgba(21, 128, 61, 0.38) !important;
+  border-color: rgba(74, 222, 128, 0.24) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .paywall-help-card-cons {
+  background-color: rgba(63, 98, 18, 0.42) !important;
+  border-color: rgba(163, 230, 53, 0.2) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .paywall-help-card-included {
+  background-color: rgba(58, 34, 23, 0.74) !important;
+  border-color: rgba(251, 146, 60, 0.24) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .paywall-help-card-pros {
+  background-color: rgba(20, 83, 45, 0.46) !important;
+  border-color: rgba(74, 222, 128, 0.2) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .paywall-help-card-cons {
+  background-color: rgba(124, 45, 18, 0.52) !important;
+  border-color: rgba(251, 146, 60, 0.24) !important;
+}
+
+/* Batch pricing snapshot theming. */
+html[data-theme-mode='light'][data-theme-name='classic'] .app-theme .pricing-snapshot-card {
+  background-color: rgba(224, 231, 255, 0.55) !important;
+  border-color: rgba(129, 140, 248, 0.55) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='sunset'] .app-theme .pricing-snapshot-card {
+  background-color: rgba(255, 237, 213, 0.72) !important;
+  border-color: rgba(251, 146, 60, 0.68) !important;
+}
+
+html[data-theme-mode='light'][data-theme-name='mint'] .app-theme .pricing-snapshot-card {
+  background-color: rgba(219, 234, 254, 0.58) !important;
+  border-color: rgba(56, 189, 248, 0.5) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='midnight'] .app-theme .pricing-snapshot-card {
+  background-color: rgba(30, 41, 59, 0.72) !important;
+  border-color: rgba(96, 165, 250, 0.38) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='forest'] .app-theme .pricing-snapshot-card {
+  background-color: rgba(6, 78, 59, 0.42) !important;
+  border-color: rgba(74, 222, 128, 0.34) !important;
+}
+
+html[data-theme-mode='dark'][data-theme-name='ember'] .app-theme .pricing-snapshot-card {
+  background-color: rgba(124, 45, 18, 0.42) !important;
+  border-color: rgba(251, 146, 60, 0.34) !important;
+}
+
+.app-theme .pricing-snapshot-btn {
+  background-color: var(--surface-soft) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-main) !important;
+}
+
+.app-theme .pricing-snapshot-btn:hover {
+  filter: brightness(0.98);
+}
+
+.app-theme .pricing-snapshot-shortcut {
+  background-color: color-mix(in srgb, var(--surface) 76%, transparent 24%) !important;
+  border-color: color-mix(in srgb, var(--border-main) 70%, transparent 30%) !important;
+}
+
+.app-theme .pricing-select-card {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-main) !important;
+  background-color: color-mix(in srgb, var(--surface) 88%, transparent 12%) !important;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.app-theme .pricing-select-card-active {
+  border-color: var(--control-primary-bg) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--control-primary-bg) 34%, transparent 66%);
+}
+
+html[data-theme-mode='light'] .app-theme .pricing-select-card-active {
+  background-color: color-mix(in srgb, var(--control-primary-bg) 14%, white 86%) !important;
+}
+
+html[data-theme-mode='dark'] .app-theme .pricing-select-card-active {
+  background-color: color-mix(in srgb, var(--control-primary-bg) 24%, var(--surface) 76%) !important;
+}
+
+/* Recipe screen accents and selected states. */
+.app-theme .recipe-tint-panel {
+  background-color: color-mix(in srgb, var(--control-primary-bg) 10%, var(--surface) 90%) !important;
+  border-color: color-mix(in srgb, var(--control-primary-bg) 32%, var(--border-main) 68%) !important;
+}
+
+.app-theme .recipe-select-card {
+  border-color: var(--control-primary-bg) !important;
+}
+
+html[data-theme-mode='light'] .app-theme .recipe-select-card-active {
+  background-color: color-mix(in srgb, var(--control-primary-bg) 14%, white 86%) !important;
+}
+
+html[data-theme-mode='dark'] .app-theme .recipe-select-card-active {
+  background-color: color-mix(in srgb, var(--control-primary-bg) 24%, var(--surface) 76%) !important;
+}
+
+.app-theme .recipe-primary-icon-btn {
+  color: var(--control-primary-bg) !important;
+}
+
+.app-theme .recipe-danger-icon-btn {
+  color: var(--control-danger-bg) !important;
+}

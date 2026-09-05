@@ -1,0 +1,106 @@
+Here are some strong additions:
+
+Create a Collection — customer picks 3–6 scents, candle sizes, labels, and optionally names the collection.
+Build Your Own Candle Set — choose any combination of candles and get automatic bundle pricing.
+Subscription Boxes — monthly or quarterly candle deliveries.
+1-candle box
+2-candle box
+Discovery box
+Seasonal box
+Discovery / Sample Packs — tealights or mini candles so customers can test several scents before buying full-size candles.
+Scent Portfolio Packs — themed scent samplers such as:
+Fresh & Clean
+Sweet & Bakery
+Floral
+Wood & Masculine
+Fruit
+Relaxation
+Seasonal
+Create Your Own Scent — select fragrance notes and make a custom blend.
+Custom Label Designer — customer enters a name, message, date, logo, or image for the candle label.
+Gift Candle Builder — candle + gift box + personalized message + optional extras.
+Mystery Candle Box — discounted surprise scents.
+Candle of the Month Club — exclusive scent each month that may never be sold individually.
+Limited Drops — numbered seasonal batches such as “Only 50 Made.”
+Early Access Club — subscribers or VIP members get new scents before everyone else.
+Refill Program — return/reuse qualifying containers for a discount.
+Rewards Points — purchases, referrals, reviews, birthdays, subscriptions, etc.
+Referral Program — “Give $5, Get $5” or percentage discounts.
+Birthday / Anniversary Reminders — customer saves important dates and the site reminds them to order gifts.
+Scent Quiz — “Find Your Candle” based on favorite smells, room, mood, season, and scent strength.
+Compare Scents — show fragrance family, sweetness, strength, warmth, freshness, and dominant notes side-by-side.
+Scent Finder — filter by things like fruity, woody, bakery, floral, citrus, clean, strong, subtle, etc.
+Room-Based Shopping — candles recommended for bedroom, bathroom, kitchen, office, patio, living room.
+Mood-Based Shopping — Relax, Energize, Romantic, Cozy, Fresh, Focus, Sleep, Party.
+Mix-and-Match Discounts — for example, buy 3 / 6 / 12 and save progressively.
+Make It a Gift — gift wrapping, gift message, and “do not include prices.”
+Corporate / Event Orders — weddings, birthdays, memorials, businesses, realtors, employee gifts, etc.
+Wholesale Portal — separate pricing and minimum quantities for stores.
+Event Favor Builder — select quantity, jar, scent, label, and packaging with instant estimated pricing.
+Custom Order Quote System — especially useful for large custom runs.
+Back-in-Stock Alerts
+Waitlists for Upcoming Scents
+Preorders
+Customer Reviews with Photos
+“Similar Scents” Recommendations
+“People Also Bought” Bundles
+Recently Viewed Candles
+Saved Favorites / Wishlist
+Gift Registry
+Digital Gift Cards
+Physical Gift Cards
+Candle Care Center — wick trimming, first burn, tunneling, storage, safety, etc.
+Burn-Time Calculator — customer selects candle size and typical daily burn time to estimate how long it will last.
+Behind the Candle pages — explain the scent inspiration, fragrance notes, wax, wick type, and production process.
+Batch Numbers — customers can see when their candle batch was poured.
+Seasonal Calendar — preview upcoming releases.
+Vote for the Next Scent — customers choose future releases.
+Bring Back a Retired Scent voting.
+Custom Scent Requests
+Customer Candle Gallery — show custom candles and collections customers have created.
+Live Inventory Counter for limited products.
+Local Pickup Scheduling
+Candle-Making Appointment Booking if you offer an in-person create-your-own experience.
+Party / Group Booking — birthdays, date nights, bridal parties, corporate groups.
+Membership Program with discounts, free samples, early access, and exclusive scents.
+The features I would prioritize
+
+For your site, I think the strongest structure would be:
+
+1. Create Your Own Candle
+Pick size → scent → wick → label → extras.
+
+2. Create Your Own Collection
+Pick 3, 4, 6, or 12 candles and name the collection.
+
+3. Discovery Packs
+Small samples that lead customers toward full-size purchases.
+
+4. Candle Subscription
+A predictable recurring-revenue product.
+
+5. Gift Builder
+Very useful around Christmas, Valentine’s Day, Mother’s Day, birthdays, housewarmings, etc.
+
+6. Scent Quiz + Scent Finder
+Makes a large scent catalog much easier to shop.
+
+7. Limited Edition Drops
+Creates urgency instead of having every scent available forever.
+
+8. Rewards + Referrals
+Helps turn one-time buyers into repeat customers.
+
+9. Custom/Event Orders
+This could become a surprisingly large revenue source.
+
+10. Build-a-Box
+Something like:
+
+Choose your box
+→ Pick 4 candles
+→ Pick 4 scents
+→ Pick your labels
+→ Add samples
+→ Add gift message
+→ Checkout

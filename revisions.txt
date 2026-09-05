@@ -1,0 +1,145 @@
+Candle Manager Storefront Revision Tracker
+==========================================
+
+Purpose
+-------
+Track the storefront and customer-commerce work requested in additions.txt.
+Update the status and notes after each feature is completed and tested.
+
+Status key
+----------
+[ ] Not started
+[-] In progress
+[x] Complete and verified
+[!] Blocked or needs a business decision
+
+Important current state
+-----------------------
+- The public storefront has a product catalog and a browser-local cart.
+- Public checkout creates customer order records, reserves stock, and delegates payment capture to configured Square or PayPal providers.
+- The public storefront includes a separate buyer/customer account system with saved addresses, order history, rewards, collections, and subscriptions.
+- Square and PayPal are the intended payment providers. Stripe is not to be added.
+
+Phase 0 - Architecture decisions and safeguards
+------------------------------------------------
+[x] Confirm which storefront capabilities require Elite, and which should be available on lower tiers. Policy: all storefront publishing, customer accounts, customer checkout, orders, and storefront-commerce tools require Elite. Lower tiers retain internal production tools only.
+[x] Define shipping regions, local pickup rules, sales-tax responsibility, and refund/cancellation policy for store owners. Initial policy: United States shipping only, no local pickup until scheduling is implemented, no automatic tax calculation, and owner-managed cancellation/refund handling. Non-US checkout addresses are rejected server-side.
+[x] Define product types: physical candle, sample, bundle, custom-made, subscription, gift card, and service/booking. Product inventory now stores and validates a product type, with physical as the safe default.
+[x] Define order states: draft, awaiting payment, paid, in production, ready for pickup, shipped, delivered, cancelled, refunded. Checkout creates awaiting-payment orders; the owner queue now manages the complete lifecycle, including refunds and cancellations.
+[x] Define inventory rules: checkout reserves available stock for 30 minutes, expired unpaid reservations are automatically cancelled, each checkout checks stock minus active reservations, and successful provider payment atomically deducts stock. Owner actions cannot mark an order paid or move unpaid orders into fulfillment, preventing manual oversells.
+[x] Define data-retention and privacy rules for customer accounts, addresses, uploaded label artwork, and review photos. The public customer account now shows the policy and supports deleting the active profile, sessions, and saved addresses. Completed-order snapshots remain for seven years; future abandoned or rejected label/review uploads must be purged within 90 days. See docs/STOREFRONT_PRIVACY_RETENTION.md.
+[x] Do not store raw card, Apple Pay, Google Pay, or PayPal credentials in the app database. Payment instruments and temporary checkout tokens are never persisted; only provider-generated transaction references, status, amount, currency, and timestamps are stored after payment. Public customer responses do not expose provider references. See docs/PAYMENT_DATA_HANDLING.md.
+
+Phase 1 - Core storefront commerce foundation
+---------------------------------------------
+[x] Add customer authentication for public storefront shoppers. Per-store customer registration, password-hash verification, 30-day sessions, sign-out, and public account UI are complete. Checkout requires an authenticated customer and uses that account's saved addresses and order history.
+[x] Add Customer profile records linked to each storefront account. Per-store profiles persist name, email, phone, marketing consent, and reminder consent. Customers can update those preferences in the public account UI, and account deletion anonymizes the active profile.
+[x] Add customer address book, contact preferences, and account settings. Customers can add, edit, delete, and choose a default shipping address, update profile/contact preferences, and manage the active account. Reminder delivery itself remains a future messaging feature.
+[x] Add Order, OrderItem, payment, fulfillment, refund, and inventory-reservation database records. Orders reserve stock during checkout, payment capture records provider transaction references, and owners can issue a provider-backed full refund through Square or PayPal. Completed refunds create an auditable payment record and move the order to refunded/cancelled fulfillment; pending Square refunds are protected from duplicate submission until provider confirmation.
+[x] Create real public checkout with Square card, Apple Pay, Google Pay, and PayPal. Uses the configured Candle Manager Square/PayPal provider credentials while keeping storefront order payments separate from tier billing. Wallet buttons appear only when Square supports the current browser/device.
+[x] Support Apple Pay and Google Pay only when Square/browser/device configuration makes them available. Wallet methods initialize only after a Square payment request is created; unsupported initialization leaves the Apple Pay button hidden and Google Pay unrendered. Wallet state is cleared whenever the payment context changes.
+[x] Add secure payment verification webhooks/callback handling for Square and PayPal. Raw request bodies are verified before JSON parsing, valid provider events are deduplicated per account, and refund status is reconciled only after signature verification. Hosted setup values are documented in docs/PAYMENT_WEBHOOK_SETUP.md.
+[x] Add checkout confirmation, payment failure, cancellation, and order-status screens. The checkout modal reports provider errors/cancellation, successful payments clear the cart and show confirmation, and customer Account order history shows the resulting order status.
+[x] Add business-side order management: the owner queue supports verified order lifecycle transitions, cancellation of unpaid reservations, fulfillment and tracking updates, internal staff notes, and provider-backed refunds. Paid orders cannot be manually marked paid, cancelled, or refunded outside the secure payment flows.
+[x] Add customer purchase history and order detail pages. Customer accounts show order history and a protected detail view with line items, payment/fulfillment state, tracking, shipping information, and totals. Internal staff notes and provider transaction references are excluded from customer responses.
+[x] Add transactional emails: order received, payment confirmation, shipping/pickup ready, cancellation/refund. SMTP-backed delivery records each event in the per-store outbox and safely remains pending until hosted SMTP settings are supplied. See docs/TRANSACTIONAL_EMAIL_SETUP.md.
+[!] Test payment flows with Square and PayPal sandbox accounts before production credentials are used. PayPal sandbox OAuth credentials were verified successfully on 2026-08-25 without creating a charge. Square testing is blocked because SQUARE_APPLICATION_ID, SQUARE_LOCATION_ID, and SQUARE_ACCESS_TOKEN are not configured in this workspace. After those are supplied, run a hosted HTTPS sandbox buyer checkout for Square card/wallet and PayPal, then verify the owner queue, refund, webhook, inventory, and email-outbox results.
+
+Phase 2 - Product catalog and scent discovery
+----------------------------------------------
+[x] Expand product data with scent family, fragrance notes, sweetness, strength, warmth, freshness, season, mood, room, burn time, wax, wick, and batch number. Product inventory now persists and edits these optional scent and production fields without affecting existing products.
+[x] Add public product detail pages rather than catalog-card-only shopping. Product cards now open a responsive detail view with description, pricing, stock, scent/production metadata, and add-to-cart support.
+[x] Add Scent Finder filters: fruity, woody, bakery, floral, citrus, clean, strong, subtle, and related attributes. The storefront catalog supports multi-select filters against scent family, fragrance notes, strength, and description, with an empty-state and clear action.
+[x] Add room-based shopping: bedroom, bathroom, kitchen, office, patio, and living room. A dedicated room selector filters storefront products by their Best room metadata and combines with Scent Finder selections.
+[x] Add mood-based shopping: relax, energize, romantic, cozy, fresh, focus, sleep, and party. The storefront mood selector combines with scent and room filters using each product's Mood metadata.
+[x] Add side-by-side scent comparison. Customers can select up to three catalog products and compare price, scent metadata, mood, room, burn time, wax, and wick in a responsive comparison table.
+[x] Add similar-scent recommendations based on scent metadata. Product detail views recommend up to three alternatives ranked by shared scent family, fragrance notes, mood, and room.
+[x] Add a supplier-neutral scent-profile library with fragrance notes, candle-performance details, protected per-account CRUD, and CSV import for authorized source data.
+[x] Add people-also-bought suggestions based on completed orders. Product details now load up to three in-stock storefront products ranked from verified paid orders, without exposing customer information.
+[x] Add recently viewed products stored per customer/browser. Stores a capped, de-duplicated product history locally per storefront and shows up to three previous views in product details without sending browsing history to the server.
+[x] Add Candle Care Center and product-specific care/burn guidance. The public storefront includes a safety guide and a product-detail entry point that shows the selected candle's wax, wick, and estimated burn life alongside label-first care instructions.
+[x] Add burn-time calculator by product size and expected daily burn time. The Candle Care Center calculates estimated days of use from daily hours, preferring a product's published burn-time field and clearly labeling the fallback size-based range as planning-only.
+[x] Add Behind the Candle content: inspiration, notes, wax, wick, process, and batch information. Product inventory now stores inspiration and making-process copy, while public product details assemble the full candle story from those fields and existing scent/production metadata.
+
+Phase 3 - Catalog availability and launch tools
+------------------------------------------------
+[x] Add Limited Drops with numbered batches and optional purchase limits. Product inventory can mark a product as a Limited Drop, assign a visible drop/batch number, and set a per-customer limit enforced during checkout against verified purchases.
+[x] Existing feature: public storefront product cards already show live stock counts selected in the storefront builder; no duplicate implementation added.
+[x] Add back-in-stock alerts. Sold-out storefront products offer email signup, duplicate subscriptions are consolidated, and replenishing inventory creates one email-outbox notification per active alert.
+[x] Add waitlists for upcoming scents. Products can be marked Coming Soon with an optional release date, collect one email per product, and notify active waitlist entries when the owner publishes the product with stock available.
+[x] Add preorders with clear availability/release dates. Upcoming products can opt into paid preorders, show their expected release date, are kept separate from in-stock checkout, and paid orders are marked preorder for fulfillment without decrementing current stock.
+[x] Add a seasonal release calendar. Public storefronts show every Coming Soon product in release-date order, with preorder availability where enabled.
+[x] Add vote-for-the-next-scent and bring-back-a-retired-scent polls. Storefront owners can publish/close both poll types with options, and public visitors receive one browser-keyed vote per poll.
+[x] Add custom scent request submission and business-side review workflow. Customers can submit scent direction and contact details; owners review, annotate, and progress requests from Storefront Setup.
+
+Phase 4 - Cart, bundles, gifts, and product builders
+-----------------------------------------------------
+[x] Add mix-and-match discount rules: buy 3, 6, or 12 with progressive discounts. Cart and checkout apply 20%, 40%, and 60% respectively from server-verified quantities.
+[x] Add Build Your Own Candle: size, scent, wick, label, and approved extras. Products using the Custom product type open a builder, carry choices through cart/checkout, and store them on the order item for fulfillment. The public Fragrance Oil Library imports 317 supplied catalog entries and lets shoppers select up to six configured candles for a gift pack request.
+[x] Add Create a Gift Pack: customers use the Fragrance Oil Library to choose an exact 4, 6, or 8 candle gift pack, configure each candle, add recipient and message details, and submit a dedicated stored gift-pack request.
+[x] Add Create a Collection: authenticated customers choose 3, 4, 6, or 12 candle configurations from the imported Fragrance Oil Library, add a collection name and optional label text, and save it privately to their customer account.
+[x] Build-a-Box is intentionally combined into Create a Collection so customers have one collection/box builder instead of redundant flows. The shared builder uses imported fragrance oils, candle configuration, a collection name, and label text; box-specific pricing and samples remain part of future sample-pack/product pricing work.
+[x] Add discovery/sample packs: storefronts with in-stock Sample products can offer 2.5 oz candle discovery packs of 2, 4, 6, or 8 items. Customers choose their scents and add the selected candles to the regular cart and checkout flow.
+[x] Add preconfigured scent portfolio packs: the public storefront provides seven curated portfolio actions, each selecting up to three in-stock products matched from the store's scent, mood, and seasonal metadata before adding them to cart.
+[x] Add mystery candle box rules and discounting: customers choose a 3, 6, or 12-candle surprise box from eligible in-stock candles. The box uses the existing server-verified 20%, 40%, or 60% quantity discount at checkout.
+[x] Digital gift cards: staff-issued and paid-product-issued stored-value cards, balance adjustments, activity records, customer account notifications, checkout redemption, and 5%/$5-$99 or 10%/$100+ order discounts. Free-gift and giveaway balances can also be selected at checkout, are deducted only after payment finalizes, and are recorded in a dedicated usage ledger.
+[x] Add physical gift cards: shoppers choose digital or physical delivery for pre-made values. Physical cards require a saved shipping address and create a paid order marked for shipment in Teams.
+[x] Add gift registry: signed-in customers can select storefront products, create a private registry with an event date/message, and share a public link. Shared links reveal only the registry details and selected items, which recipients can add to their own cart.
+
+Phase 5 - Customer engagement and retention
+--------------------------------------------
+[x] Add saved favorites/wishlist: signed-in customers can save published storefront products from the catalog and view or remove their private favorites in their account.
+[x] Add customer reviews with optional photo data, moderation, and verified-purchase status. Customers submit reviews for moderation; approved reviews display publicly; store staff approve or reject them in Teams > Reviews.
+[x] Add rewards ledger: paid orders award one point per dollar of subtotal, approved reviews award verified/unverified review points, and staff can record referral, birthday, subscription, or goodwill points. Customers see their balance and history; staff actions are audited and notify the customer.
+[x] Add referral program: personal referral codes give a new customer a $5 welcome credit at registration; the referrer receives 50 points after the referral's first paid order.
+[x] Add birthday and anniversary reminder dates with explicit customer consent. Customers save private dates and can separately opt in or withdraw consent for occasion reminders from their account.
+[x] Add coupon/discount code engine with stacking and expiration rules. Storefront staff create percentage or fixed codes with start/end dates, total/per-customer limits, mix-and-match and gift-card stacking policies, activation controls, and a paid-redemption audit. Checkout validates and prices codes server-side.
+[x] Add customer candle gallery for approved custom products/collections. Customers submit saved collections or paid custom candles from Account; storefront staff approve or reject submissions, and approved items display publicly.
+[x] Add membership program benefits: discounts, samples, early access, and exclusive scents. Staff configure and enroll members in Storefront; active members receive server-verified discounts and eligible sample products at checkout, and product-level member-only/early-access rules are enforced.
+[x] Add Early Access Club access rules. This is implemented through active membership status and optional membership end dates; product-level early-access days are labeled in the storefront and enforced during server-side checkout.
+
+Phase 6 - Subscriptions
+-----------------------
+[x] Add subscription plans: one-candle, two-candle, discovery, seasonal, and Candle of the Month. Storefront staff create and activate plan cards with candle counts and monthly/quarterly prices; active plans display publicly. Enrollment and recurring billing follow in the remaining subscription steps.
+[x] Add monthly and quarterly delivery schedules. Each subscription plan now records a monthly delivery day and quarterly starting month, which are shown to customers; individual subscription shipment dates are added with customer enrollment in the next steps.
+[ ] Add subscription payment agreements and provider-managed recurring billing.
+[x] Add customer subscription management: skip, pause, cancel, change address, and view upcoming shipment. Customer Account now lists subscriptions and securely updates only the signed-in customer's records. It supports skip-next, pause, resume, cancel, saved-address changes, and displays the next shipment date.
+[-] Add subscription fulfillment queue and renewal/payment-failure handling for store owners. The owner queue now lists subscription fulfillments and updates pending, production, ready, shipped, and cancelled statuses with customer notifications. Provider renewal and payment-failure events still require provider-managed recurring billing.
+[x] Support exclusive subscriber-only scents and early-access rules. Product inventory now provides separate subscriber-only and subscriber early-access controls; public catalog cards label them and checkout verifies an active paid subscription server-side. Membership and subscription access remain independent.
+
+Phase 7 - Custom, event, and B2B orders
+----------------------------------------
+[x] Add Custom Label Designer: customer text, date, message, logo/image upload, preview, approval, and production notes. Customers design and preview labels with 5 MB artwork uploads; Teams > Orders lets staff review each custom label, approve or request changes, and save production notes.
+[x] Add Create Your Own Scent request flow with fragrance-note choices and a business approval/quote workflow. Customers select a scent family and guided note choices; staff review requests in Launch Tools, set the workflow state, record a quote amount, and retain quote/internal notes.
+[x] Add Event Favor Builder: quantity, vessel, scent, label, packaging, and estimated price. Customers submit event favor specifications with an immediate planning estimate; Storefront Setup provides owner status and final-quote controls.
+[-] Add custom-order quote system with revision, approval, deposit, and final-payment handling. Owner quotes, revision records, customer private approval links, and deposit/final-payment state are complete. Provider-backed deposit and final-payment capture remains pending Square/PayPal checkout configuration.
+[x] Add corporate/event inquiry forms for weddings, birthdays, memorials, employee gifts, and realtor gifts. The storefront contact form now tags each inquiry type before it enters the existing Teams contact workflow.
+[removed] Private-label order workflow. Removed from storefront UI, owner tools, API routes, and future Cloudflare D1 schema at the owner's request; existing local SQLite records are retained but inaccessible.
+
+Phase 8 - Local services and refill program
+-------------------------------------------
+[x] Add local pickup scheduling with availability, cutoff times, pickup instructions, and order status updates. Storefront Setup manages pickup settings and slots; checkout requires an available slot and the existing order workflow tracks fulfillment status.
+[-] Add candle-making appointment booking with capacity, time slots, payment/deposit, and confirmation. Storefront staff can create, open/close, and manage slots and customer reservations. The public storefront enforces remaining party-seat capacity and confirms reservations. Provider-backed deposit collection remains pending Square/PayPal checkout configuration; bookings record that deposit as pending rather than pretending it was charged.
+[x] Add party/group booking for birthdays, date nights, bridal parties, and corporate groups. Customers can send a private-party request with event type, preferred date, guest count, and requirements; Storefront Setup provides a status and internal-notes queue for staff review.
+[x] Add refill program eligibility, returned-container tracking, discount rules, and inventory/fulfillment workflow. Storefront Setup controls availability, eligibility text, return instructions, and discount percentage. Customers submit container-return requests; staff track inspection/receipt, production, ready, completion, issues, and the applied discount.
+
+Testing and release checklist for every completed feature
+--------------------------------------------------------
+[x] Add server validation for all customer-submitted data. Audited public storefront mutations: each request body is parsed through bounded Zod schemas before database work; invalid customer input is rejected with HTTP 400. Corrected the public event-favor and custom-quote routes so their validated requests resolve storefront slugs safely at runtime.
+[x] Add authorization checks so one storefront/customer cannot access another account's data. Public customer tokens are resolved only within the account database selected by the storefront slug, and customer-owned records are queried or mutated with their customer ID. Added a storefront-wide owner permission guard so every `/api/storefront/*` route, including workshops, party requests, and refills, requires the signed-in account's `storefront_edit` permission.
+[x] Add rate limits and upload limits for public forms, reviews, label artwork, and custom requests. Public write routes are limited to 10 requests per IP every 15 minutes, with HTTP 429 and Retry-After responses. JSON bodies are limited to 8 MB; individual schemas cap label artwork at 7 MB, reviews at 6 MB, and gallery images at 2.5 MB.
+[x] Add database migration/init support for new tables. Storefront tables are created for new accounts and upgraded for existing account databases through the core, account, and legacy initialization paths.
+[x] Add API/client tests for success, validation failure, permissions, and error recovery. `npm run test:api` boots the API on an isolated port and verifies a public success response, validation failure, unauthenticated owner rejection, and workshop capacity-conflict behavior while cleaning up its temporary records.
+[x] Test desktop and mobile storefront flows. Confirmed the public storefront boots successfully and completed a responsive layout audit. Fixed the fixed customer-action rail so it remains within narrow viewports and scrolls horizontally instead of clipping buttons; storefront modals already use full-width, bounded, scrollable layouts.
+[-] Test inventory, discounts, sales totals, refunds, and provider callback edge cases. Non-payment coverage is complete: automated tests verify catalog/discovery surfaces, buyer account surfaces, private-party/refill records, pickup availability, workshop capacity, stock reservation, and mix-and-match discount calculation. Provider payment capture, refunds, totals after capture, and webhook callbacks remain pending Square/PayPal sandbox configuration.
+[x] Run prisma generation, typecheck, lint, production build, and backend syntax checks. These checks have been run repeatedly through the completed storefront and Teams changes; the current build remains clean apart from the non-blocking Browserslist data notice.
+[ ] Mark the feature [x] here and record any relevant notes below.
+
+Completed feature notes
+-----------------------
+- 2026-08-29 non-payment feature audit: no duplicate API route registrations across 222 routes; no orphaned public storefront components; Build-a-Box remains intentionally consolidated into Create a Collection. Fixed public pickup BigInt serialization and accepted standard U.S. address country codes (United States, US, USA). Removed user-facing wholesale pricing and storefront template copy; legacy batch fields are retained only for backward-compatible records.
+
+Next recommended implementation target
+--------------------------------------
+Phase 1: customer accounts, real order records, and Square/PayPal storefront checkout.
+This is required before subscriptions, rewards, gift cards, custom orders, referrals, and order-based recommendations can be reliable.

@@ -1,0 +1,18 @@
+# Optional local Worker variables. Cloudflare dashboard variables and secrets are used for GitHub deployments.
+# Do not put this file or real secret values in source control.
+
+APP_ORIGIN=http://localhost:5173
+PAYPAL_ENVIRONMENT=sandbox
+SQUARE_ENVIRONMENT=sandbox
+
+# Required only after the matching payment routes are converted.
+# PAYPAL_CLIENT_ID=
+# PAYPAL_CLIENT_SECRET=
+# SQUARE_ACCESS_TOKEN=
+# SQUARE_WEBHOOK_SIGNATURE_KEY=
+# PAYPAL_WEBHOOK_ID=
+# SQUARE_WEBHOOK_URL=
+# SUPERADMIN_EMAIL=
+# SUPERADMIN_PASSWORD=
+# EMAIL_DELIVERY_URL=
+# EMAIL_DELIVERY_TOKEN=
